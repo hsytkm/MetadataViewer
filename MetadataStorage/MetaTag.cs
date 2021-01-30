@@ -1,18 +1,22 @@
 ﻿using System;
+using UnitGenerator;
 
-namespace MetadataViewer.Models
+namespace MetadataStorage
 {
-    record MetaTag
+    [UnitOf(typeof(int))]
+    public readonly partial struct TagId { }
+
+    public record MetaTag
     {
         public string DirectoryName { get; }
-        public int Type { get; }
+        public TagId Id { get; }
         public string Name { get; }
         public string Description { get; }
 
         public MetaTag(MetadataExtractor.Tag tag)
         {
             DirectoryName = tag.DirectoryName;
-            Type = tag.Type;
+            Id = new TagId(tag.Type);
             Name = tag.HasName ? tag.Name : "no name";
             Description = tag.Description ?? "empty";
         }
