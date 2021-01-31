@@ -18,7 +18,7 @@ namespace MetadataStorage
             DirectoryName = tag.DirectoryName;
             Id = new TagId(tag.Type);
             Name = tag.HasName ? tag.Name : "no name";
-            Description = tag.Description ?? "empty";
+            Description = tag.Description ?? "null";
         }
     }
 }

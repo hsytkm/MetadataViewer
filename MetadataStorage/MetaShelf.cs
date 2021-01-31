@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,7 +7,7 @@ namespace MetadataStorage
 {
     public class MetaShelf
     {
-        private readonly Dictionary<string, MetaBook> _booksMap = new();
+        private readonly IDictionary<string, MetaBook> _booksDict = new ConcurrentDictionary<string, MetaBook>();
 
         public MetaShelf()
         {
@@ -15,12 +16,14 @@ namespace MetadataStorage
 
         public MetaBook GetOrAdd(string filePath)
         {
-            if (!_booksMap.TryGetValue(filePath, out var book))
+            var key = filePath;
+
+            if (!_booksDict.TryGetValue(key, out var value))
             {
-                book = new MetaBook(filePath);
-                _booksMap.Add(filePath, book);
+                value = new MetaBook(key);
+                _booksDict.Add(key, value);
             }
-            return book;
+            return value;
         }
     }
 }

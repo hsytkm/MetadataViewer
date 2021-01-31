@@ -18,6 +18,17 @@
             </i:EventTrigger>
         </i:Interaction.Triggers>
 
+        <!-- VM needs raw word in case the image changes -->
+        <TextBox DockPanel.Dock="Top"
+                 Text="{Binding FilterWord.Value, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" >
+            <i:Interaction.Triggers>
+                <i:PropertyChangedTrigger Binding="{Binding Text, RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" >
+                    <i:InvokeCommandAction Command="{Binding FilterTagCommand, Mode=OneTime}"
+                                           CommandParameter="{Binding Text, RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
+                </i:PropertyChangedTrigger>
+            </i:Interaction.Triggers>
+        </TextBox>
+
         <TextBlock DockPanel.Dock="Top"
                    Text="{Binding FilePath.Value, Mode=OneWay}" />
 
