@@ -29,11 +29,9 @@
             </i:Interaction.Triggers>
         </TextBox>
 
-        <TextBlock DockPanel.Dock="Top"
-                   Text="{Binding FilePath.Value, Mode=OneWay}" />
+        <TextBlock DockPanel.Dock="Top" Text="{Binding FilePath.Value, Mode=OneWay}" />
 
-        <DataGrid CanUserReorderColumns="False" CanUserSortColumns="False"
-                  ItemsSource="{Binding Tags.Value, Mode=OneWay}"
-                  aprop:DataGridFormat.IntFormatAutoGenerate="0x{0:x4}" />
+        <local:MetaTabControl Pages="{Binding Pages.Value, Mode=OneWay}" />
+
     </DockPanel>
 </Window>

@@ -13,7 +13,7 @@ namespace MetadataViewer
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            //containerRegistry.RegisterSingleton<ITextFileWriter, CsvFileWriter>();
+            containerRegistry.RegisterSingleton<Models.MetaModel>();
         }
 
         //protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)

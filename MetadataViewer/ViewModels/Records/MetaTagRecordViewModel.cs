@@ -2,7 +2,7 @@
 
 namespace MetadataViewer.ViewModels.Records
 {
-    record TagRecordViewModel
+    record MetaTagRecordViewModel
     {
         public string Group { get; }
         public int Id { get; }
@@ -12,7 +12,7 @@ namespace MetadataViewer.ViewModels.Records
         private readonly string _filterSource;
         private readonly static char[] _separator = new char[] { ' ' };
 
-        public TagRecordViewModel(MetadataStorage.MetaTag tag)
+        public MetaTagRecordViewModel(MetadataStorage.MetaTag tag)
         {
             Group = tag.DirectoryName;
             Id = (int)tag.Id;
@@ -21,7 +21,6 @@ namespace MetadataViewer.ViewModels.Records
 
             _filterSource = Group.ToLower() + "0x" + Id.ToString("x4") + Name.ToLower() + Description.ToLower();
         }
-
 
         /// <summary>文字列検索のヒット判定(空白区切りは AND で検索)</summary>
         public bool IsContains(string word)
