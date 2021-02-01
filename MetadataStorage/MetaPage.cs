@@ -14,7 +14,7 @@ namespace MetadataStorage
         public MetaPage(MetadataExtractor.Directory directory)
         {
             Name = directory.Name;
-            Tags = directory.Tags.Select(x => new MetaTag(x)).ToArray();
+            Tags = directory.Tags.Select(x => new MetaTag(x, directory.GetObject(x.Type))).ToArray();
         }
 
     }

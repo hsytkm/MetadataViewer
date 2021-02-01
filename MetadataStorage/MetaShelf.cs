@@ -16,12 +16,16 @@ namespace MetadataStorage
 
         public MetaBook GetOrAdd(string filePath)
         {
-            var key = filePath;
-
-            if (!_booksDict.TryGetValue(key, out var value))
+            if (!_booksDict.TryGetValue(filePath, out var value))
             {
-                value = new MetaBook(key);
-                _booksDict.Add(key, value);
+                var sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
+
+                value = new MetaBook(filePath);
+                _booksDict.Add(filePath, value);
+
+                sw.Stop();
+                System.Diagnostics.Debug.WriteLine($"ReadMeta: {sw.ElapsedMilliseconds} msec");
             }
             return value;
         }

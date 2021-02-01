@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 
 namespace MetadataViewer.Views
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
     {
         public MainWindow()
         {
