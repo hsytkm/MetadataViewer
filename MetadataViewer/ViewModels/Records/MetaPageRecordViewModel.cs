@@ -9,16 +9,17 @@ namespace MetadataViewer.ViewModels.Records
         public string Name { get; }
         public IReadOnlyCollection<MetaTagRecordViewModel> Tags { get; }
 
-        public MetaPageRecordViewModel(string name, IEnumerable<MetaTagRecordViewModel> tags)
+        public MetaPageRecordViewModel(string name, IReadOnlyCollection<MetaTagRecordViewModel> tags)
         {
             Name = name;
             Tags = tags.ToArray();
         }
 
+        public MetaPageRecordViewModel(string name, IEnumerable<MetaTagRecordViewModel> tags)
+            : this(name, tags.ToArray()) { }
+
         public MetaPageRecordViewModel(MetadataStorage.MetaPage page)
-        {
-            Name = page.Name;
-            Tags = page.Tags.Select(x => new MetaTagRecordViewModel(x)).ToArray();
-        }
+            : this(page.Name, page.Tags.Select(x => new MetaTagRecordViewModel(x)).ToArray()) { }
+
     }
 }

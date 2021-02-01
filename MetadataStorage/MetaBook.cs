@@ -1,5 +1,4 @@
 ﻿using MetadataExtractor;
-using MetadataExtractor.Formats.Jpeg;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,19 +34,17 @@ namespace MetadataStorage
                 _ => Extensions.NotSupported,
             };
 
+        private static bool IsSupportedExtension(string filePath) => GetExtension(filePath) is not Extensions.NotSupported;
+
         private static IReadOnlyCollection<MetaPage> ReadMetaPages(string filePath)
         {
-            var directories = GetExtension(filePath) is Extensions.NotSupported
-                ? null
-                : ImageMetadataReader.ReadMetadata(filePath);
+            var directories = IsSupportedExtension(filePath)
+                ? ImageMetadataReader.ReadMetadata(filePath)
+                : null;
 
             return directories is not null
                 ? directories.Select(d => new MetaPage(d)).ToArray()
                 : Array.Empty<MetaPage>();
         }
-
-        //public IEnumerable<MetaTag> GetAllTags() => Pages.SelectMany(x => x.Tags);
-        //public IEnumerable<string> GetPagesName() => Pages.Select(x => x.Name);
-
     }
 }

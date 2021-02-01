@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace MetadataStorage
 {
@@ -9,10 +10,7 @@ namespace MetadataStorage
     {
         private readonly IDictionary<string, MetaBook> _booksDict = new ConcurrentDictionary<string, MetaBook>();
 
-        public MetaShelf()
-        {
-
-        }
+        public MetaShelf() { }
 
         public MetaBook GetOrAdd(string filePath)
         {
@@ -29,5 +27,8 @@ namespace MetadataStorage
             }
             return value;
         }
+
+        public static string GetMetadataExtractorVersion()
+            => Assembly.GetAssembly(typeof(MetadataExtractor.Tag))?.GetName().Version?.ToString() ?? "";
     }
 }

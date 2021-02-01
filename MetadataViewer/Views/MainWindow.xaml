@@ -1,5 +1,6 @@
 ﻿<mah:MetroWindow  x:Class="MetadataViewer.Views.MainWindow"
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
                   xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
@@ -10,22 +11,38 @@
                   xmlns:aprop="clr-namespace:MetadataViewer.Views.AttachedProperties"
                   mc:Ignorable="d"
                   TitleCharacterCasing="Normal"
-                  Title="MetadataViewer"
+                  Title="MetadataExtractorViewer"
                   Height="450" Width="800" >
 
+    <mah:MetroWindow.RightWindowCommands>
+        <mah:WindowCommands ShowLastSeparator="False" >
+            <Button Click="OpenMetadataExtractorOnGitHub"
+                    Content="metadata-extractor-dotnet" ToolTip="metadata-extractor-dotnet on GitHub" />
+            <Button Click="OpenMetadataExtractorOnNuget"
+                    ToolTip="metadata-extractor-dotnet on Nuget" >
+                <TextBlock Text="{Binding MetadataExtractorVersion, Mode=OneTime, StringFormat='Using ver {0}'}" />
+            </Button>
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
+
     <DockPanel Margin="10" >
+        <Panel.Resources>
+            <sys:String x:Key="FilePathDefaultMessage">Accepts file drop.</sys:String>
+        </Panel.Resources>
+        
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="Drop" >
                 <action:GetDroppedFilePathAction DroppedPath="{Binding DroppedPath.Value, Mode=OneWayToSource}" />
             </i:EventTrigger>
         </i:Interaction.Triggers>
 
-        <!-- VM needs raw word in case the image changes -->
-        <TextBox x:Name="filterWordTextBox" DockPanel.Dock="Top" />
+        <TextBlock DockPanel.Dock="Top"
+                   Text="{Binding FilePath.Value, Mode=OneWay, TargetNullValue={StaticResource FilePathDefaultMessage}}" />
 
-        <TextBlock DockPanel.Dock="Top" Text="{Binding FilePath.Value, Mode=OneWay}" />
+        <TextBox x:Name="filterWordTextBox" DockPanel.Dock="Top" Margin="0,10"
+                 mah:TextBoxHelper.Watermark="Search..." />
 
-        <local:MetaTabControl ItemsSource="{Binding Pages.Value, Mode=OneWay}"
+        <local:MetaTabControl ItemsSource="{Binding MetaPages.Value, Mode=OneWay}"
                               FilterWord="{Binding Text, Mode=OneWay, Source={x:Reference Name=filterWordTextBox}}" />
 
     </DockPanel>

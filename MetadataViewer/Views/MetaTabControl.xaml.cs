@@ -26,8 +26,8 @@ namespace MetadataViewer.Views
             InitializeComponent();
 
             // Filter tag item when SelectedItem(tab) changed
-            var dpd1 = DependencyPropertyDescriptor.FromProperty(SelectedItemProperty, typeof(Selector));
-            dpd1?.AddValueChanged(this, OnSelectedItemPropertyChanged);
+            var dpd = DependencyPropertyDescriptor.FromProperty(SelectedItemProperty, typeof(Selector));
+            dpd?.AddValueChanged(this, OnSelectedItemPropertyChanged);
         }
 
         private static void OnFilterWordPropertyChanged(MetaTabControl tabControl, string word)

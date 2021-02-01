@@ -16,8 +16,8 @@ namespace MetadataViewer.ViewModels.Records
 
         public MetaTagRecordViewModel(MetadataStorage.MetaTag tag)
         {
-            Group = tag.DirectoryName;
-            Id = (int)tag.Id;
+            Group = tag.PageName;
+            Id = tag.Id;
             Name = tag.Name;
             Description = tag.Description;
             Type = tag.Data?.GetType();

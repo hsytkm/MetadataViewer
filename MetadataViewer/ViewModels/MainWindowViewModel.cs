@@ -13,9 +13,10 @@ namespace MetadataViewer.ViewModels
 {
     class MainWindowViewModel : BindableBase
     {
+        public string MetadataExtractorVersion { get; } = MetaModel.GetMetadataExtractorVersion();
         public IReactiveProperty<string> FilePath { get; }
         public IReactiveProperty<string> DroppedPath { get; }
-        public IReadOnlyReactiveProperty<IReadOnlyCollection<MetaPageRecordViewModel>> Pages { get; }
+        public IReadOnlyReactiveProperty<IReadOnlyCollection<MetaPageRecordViewModel>> MetaPages { get; }
 
         public MainWindowViewModel(MetaModel metaModel)
         {
@@ -25,7 +26,7 @@ namespace MetadataViewer.ViewModels
             DroppedPath = new ReactivePropertySlim<string>(mode: ReactivePropertyMode.DistinctUntilChanged).AddTo(disposables);
             DroppedPath.Subscribe(x => FilePath.Value = x).AddTo(disposables);
 
-            Pages = metaModel.SelectedBook
+            MetaPages = metaModel.SelectedBook
                 .Where(x => x is not null)
                 .Select(x => CreateMetaPages(x!).ToArray())
                 .ToReadOnlyReactivePropertySlim<IReadOnlyCollection<MetaPageRecordViewModel>>()

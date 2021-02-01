@@ -10,5 +10,6 @@ namespace MetadataViewer.Models
 #else
             false;
 #endif
+        public const bool IsReleaseBuild = !IsDebugBuild;
     }
 }

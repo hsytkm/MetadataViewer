@@ -24,10 +24,9 @@ namespace MetadataViewer
         //{
         //}
 
-        // ここで例外をハンドルしなければアプリ死にます
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            var message = "未ハンドルの例外を検出しました"+ Environment.NewLine
+            var message = "Occurred unhandled exception" + Environment.NewLine
                 + $"{e.Exception.GetType()} : {e.Exception.Message}";
 
             MessageBox.Show(message, "Exception occurred", MessageBoxButton.OK, MessageBoxImage.Error);

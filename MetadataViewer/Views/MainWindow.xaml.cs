@@ -1,25 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MahApps.Metro.Controls;
+using System;
+using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MetadataViewer.Views
 {
-    public partial class MainWindow : MahApps.Metro.Controls.MetroWindow
+    public partial class MainWindow : MetroWindow
     {
         public MainWindow()
         {
             InitializeComponent();
         }
+
+        private static void ProcessStart(string url) => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+
+        private void OpenMetadataExtractorOnNuget(object sender, RoutedEventArgs e)
+            => ProcessStart("https://www.nuget.org/packages/MetadataExtractor/");
+
+        private void OpenMetadataExtractorOnGitHub(object sender, RoutedEventArgs e)
+            => ProcessStart("https://github.com/drewnoakes/metadata-extractor-dotnet");
     }
 }
