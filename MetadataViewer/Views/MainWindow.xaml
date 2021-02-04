@@ -8,8 +8,8 @@
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:local="clr-namespace:MetadataViewer.Views"
                   xmlns:action="clr-namespace:MetadataViewer.Views.Actions"
-                  xmlns:aprop="clr-namespace:MetadataViewer.Views.AttachedProperties"
                   mc:Ignorable="d"
+                  ResizeMode="CanResizeWithGrip"
                   TitleCharacterCasing="Normal"
                   Title="MetadataExtractorViewer"
                   Height="450" Width="800" >

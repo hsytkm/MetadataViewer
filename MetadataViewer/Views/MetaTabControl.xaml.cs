@@ -1,12 +1,15 @@
-﻿using MetadataViewer.ViewModels.Records;
+﻿using MetadataViewer.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Markup;
 
 namespace MetadataViewer.Views
 {
@@ -32,19 +35,59 @@ namespace MetadataViewer.Views
 
         private static void OnFilterWordPropertyChanged(MetaTabControl tabControl, string word)
         {
-            if (tabControl.SelectedItem is not MetaPageRecordViewModel page) return;
-            if (page.Tags is not IReadOnlyCollection<MetaTagRecordViewModel> tags) return;
+            if (tabControl.SelectedItem is not MetaPageViewModel page) return;
+            if (page.Tags is not IReadOnlyCollection<MetaTagViewModel> tags) return;
 
             var collectionView = CollectionViewSource.GetDefaultView(tags);
             collectionView.Filter = string.IsNullOrWhiteSpace(word)
-                ? null      // static _ => true   // clear
-                : x => (x as MetaTagRecordViewModel).IsContains(word);
+                ? static x =>
+                {
+                    (x as MetaTagViewModel).ClearColors();
+                    return true;
+                }
+                : x =>
+                {
+                    var words = SplitFilterWords(word);
+                    return (x as MetaTagViewModel).IsContainsAll(words);
+                };
         }
+
+        private static readonly char[] _separator = new char[] { ' ' };
+        private static IReadOnlyCollection<string> SplitFilterWords(string word) => word.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
 
         private static void OnSelectedItemPropertyChanged(object? sender, EventArgs e)
         {
             if (sender is not MetaTabControl tabControl) return;
             OnFilterWordPropertyChanged(tabControl, tabControl.FilterWord);
+        }
+
+        private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            if (e.PropertyType == typeof(ColoredText))
+            {
+                e.Column = new DataGridTemplateColumn
+                {
+                    Header = e.PropertyName,
+                    CellTemplate = GetColoredTextDataTemplate(e.PropertyName),
+                };
+            }
+
+            static DataTemplate GetColoredTextDataTemplate(string columnName)
+            {
+                var xaml = "<DataTemplate><TextBlock h:TextBoxContentHelper.ColoredTextItem=\"{Binding " + columnName + "}\"/></DataTemplate>";
+                using var sr = new MemoryStream(Encoding.ASCII.GetBytes(xaml));
+                return (DataTemplate)XamlReader.Load(sr, _parserContext);
+            }
+        }
+
+        private static readonly ParserContext _parserContext = GetParserContext();
+        private static ParserContext GetParserContext()
+        {
+            var pc = new ParserContext();
+            pc.XmlnsDictionary.Add("", "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
+            pc.XmlnsDictionary.Add("x", "http://schemas.microsoft.com/winfx/2006/xaml");
+            pc.XmlnsDictionary.Add("h", "clr-namespace:MetadataViewer.Views.Helpers;assembly=MetadataViewer");
+            return pc;
         }
     }
 }

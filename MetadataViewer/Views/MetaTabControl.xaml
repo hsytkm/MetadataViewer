@@ -6,7 +6,6 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:local="clr-namespace:MetadataViewer.Views"
             xmlns:action="clr-namespace:MetadataViewer.Views.Actions"
-            xmlns:aprop="clr-namespace:MetadataViewer.Views.AttachedProperties"
             mc:Ignorable="d" 
             d:DesignHeight="450" d:DesignWidth="800"
             TabStripPlacement="Left" >
@@ -27,7 +26,7 @@
         <DataTemplate>
             <DataGrid CanUserReorderColumns="False" CanUserSortColumns="False"
                       ItemsSource="{Binding Tags, Mode=OneTime}"
-                      aprop:DataGridFormat.IntFormatAutoGenerate="0x{0:x4}" />
+                      AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" />
         </DataTemplate>
     </TabControl.ContentTemplate>
 

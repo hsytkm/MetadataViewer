@@ -1,5 +1,4 @@
 ﻿using MetadataViewer.Models;
-using MetadataViewer.ViewModels.Records;
 using Prism.Mvvm;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
@@ -16,7 +15,7 @@ namespace MetadataViewer.ViewModels
         public string MetadataExtractorVersion { get; } = MetaModel.GetMetadataExtractorVersion();
         public IReactiveProperty<string> FilePath { get; }
         public IReactiveProperty<string> DroppedPath { get; }
-        public IReadOnlyReactiveProperty<IReadOnlyCollection<MetaPageRecordViewModel>> MetaPages { get; }
+        public IReadOnlyReactiveProperty<IReadOnlyCollection<MetaPageViewModel>> MetaPages { get; }
 
         public MainWindowViewModel(MetaModel metaModel)
         {
@@ -29,16 +28,18 @@ namespace MetadataViewer.ViewModels
             MetaPages = metaModel.SelectedBook
                 .Where(x => x is not null)
                 .Select(x => CreateMetaPages(x!).ToArray())
-                .ToReadOnlyReactivePropertySlim<IReadOnlyCollection<MetaPageRecordViewModel>>()
+                .ToReadOnlyReactivePropertySlim<IReadOnlyCollection<MetaPageViewModel>>()
                 .AddTo(disposables);
 
-            if (AssemblyState.IsDebugBuild) FilePath.Value = @"C:\data\official\Panasonic_DMC-GF7.jpg";
+#if DEBUG
+            FilePath.Value = @"C:\data\official\Panasonic_DMC-GF7.jpg";
+#endif
         }
 
-        private static IEnumerable<MetaPageRecordViewModel> CreateMetaPages(MetadataStorage.MetaBook book)
+        private static IEnumerable<MetaPageViewModel> CreateMetaPages(MetadataStorage.MetaBook book)
         {
-            var pages = book.Pages.Select(p => new MetaPageRecordViewModel(p)).ToArray();
-            var all = new MetaPageRecordViewModel("All", pages.SelectMany(x => x.Tags));
+            var pages = book.Pages.Select(p => new MetaPageViewModel(p)).ToArray();
+            var all = new MetaPageViewModel("All", pages.SelectMany(x => x.Tags));
             return pages.Prepend(all);
         }
     }
