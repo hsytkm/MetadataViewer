@@ -50,10 +50,9 @@ namespace MetadataViewer.Views
                     var words = SplitFilterWords(word);
                     return (x as MetaTagViewModel).IsContainsAll(words);
                 };
-        }
 
-        private static readonly char[] _separator = new char[] { ' ' };
-        private static IReadOnlyCollection<string> SplitFilterWords(string word) => word.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
+            static IReadOnlyCollection<string> SplitFilterWords(string word) => word.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        }
 
         private static void OnSelectedItemPropertyChanged(object? sender, EventArgs e)
         {
@@ -69,25 +68,38 @@ namespace MetadataViewer.Views
                 {
                     Header = e.PropertyName,
                     CellTemplate = GetColoredTextDataTemplate(e.PropertyName),
+                    IsReadOnly = true,
                 };
             }
 
-            static DataTemplate GetColoredTextDataTemplate(string columnName)
+            DataTemplate GetColoredTextDataTemplate(string name)
             {
-                var xaml = "<DataTemplate><TextBlock h:TextBoxContentHelper.ColoredTextItem=\"{Binding " + columnName + "}\"/></DataTemplate>";
-                using var sr = new MemoryStream(Encoding.ASCII.GetBytes(xaml));
-                return (DataTemplate)XamlReader.Load(sr, _parserContext);
+                static ParserContext GetParserContext()
+                {
+                    var pc = new ParserContext();
+                    pc.XmlnsDictionary.Add("", "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
+                    pc.XmlnsDictionary.Add("x", "http://schemas.microsoft.com/winfx/2006/xaml");
+                    pc.XmlnsDictionary.Add("h", "clr-namespace:MetadataViewer.Views.Helpers;assembly=MetadataViewer");
+                    return pc;
+                }
+
+                static DataTemplate GetDataTemplate(string name)
+                {
+                    var xaml = "<DataTemplate><TextBlock h:TextBoxContentHelper.ColoredTextItem=\"{Binding " + name + "}\"/></DataTemplate>";
+                    var bs = Encoding.ASCII.GetBytes(xaml);
+                    using var sr = new MemoryStream(bs);
+                    return (DataTemplate)XamlReader.Load(sr, GetParserContext());
+                }
+
+                if (!_propertyNameToDataTemplateDict.TryGetValue(name, out var dataTemplate))
+                {
+                    dataTemplate = GetDataTemplate(name);
+                    _propertyNameToDataTemplateDict.Add(name, dataTemplate);
+                }
+                return dataTemplate;
             }
         }
+        private readonly Dictionary<string, DataTemplate> _propertyNameToDataTemplateDict = new();
 
-        private static readonly ParserContext _parserContext = GetParserContext();
-        private static ParserContext GetParserContext()
-        {
-            var pc = new ParserContext();
-            pc.XmlnsDictionary.Add("", "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
-            pc.XmlnsDictionary.Add("x", "http://schemas.microsoft.com/winfx/2006/xaml");
-            pc.XmlnsDictionary.Add("h", "clr-namespace:MetadataViewer.Views.Helpers;assembly=MetadataViewer");
-            return pc;
-        }
     }
 }

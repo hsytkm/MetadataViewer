@@ -23,14 +23,13 @@ namespace MetadataViewer.Views.Helpers
             if (d is not TextBlock textBlock) return;
             if (e.NewValue is not ColoredText ct) return;
 
-            if (ct.ColoredRanges is null || !ct.ColoredRanges.Any())
+            if (ct.ColoredRanges.Count > 0)     // Any()より速いと思う
             {
-                textBlock.Text = ct.Text;
+                textBlock.Inlines.AddRange(CreateRuns(ct));
             }
             else
             {
-                var runs = CreateRuns(ct);
-                textBlock.Inlines.AddRange(runs);
+                textBlock.Text = ct.Text;
             }
 
             static IEnumerable<Run> CreateRuns(ColoredText ct)
