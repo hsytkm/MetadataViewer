@@ -42,17 +42,33 @@ namespace MetadataViewer.ViewModels
         /// <summary>文字列検索のヒット判定</summary>
         public bool IsContainsAll(IReadOnlyCollection<string> words)
         {
-            // 文字列のヒット位置を更新
-            foreach (var prop in ColoredTextProperties)
-                prop.FilterWords(words);
+            // words は Lower で通知される取り決め（高速化のため）
+            var hittedCounter = CountHittedWords(_textConcatLower, words);
+            var isHitAll = hittedCounter >= words.Count;
+            var isHitAny = hittedCounter > 0;
 
-            // 全文字列がヒットしたか判定
-            foreach (var w in words)
+            if (!isHitAny)
             {
-                if (!_textConcatLower.Contains(w.ToLower()))
-                    return false;
+                ClearColors();
             }
-            return true;
+            else
+            {
+                // 文字列のヒット位置を更新
+                foreach (var prop in ColoredTextProperties)
+                    prop.FilterWords(words);
+            }
+            return isHitAll;
+
+            // 複数の検索文字列にヒットした数を返す
+            static int CountHittedWords(string source, IReadOnlyCollection<string> words)
+            {
+                var counter = 0;
+                foreach (var w in words)
+                {
+                    if (source.Contains(w)) counter++;
+                }
+                return counter;
+            }
         }
 
         public void ClearColors()

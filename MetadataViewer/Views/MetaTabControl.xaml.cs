@@ -38,20 +38,20 @@ namespace MetadataViewer.Views
             if (tabControl.SelectedItem is not MetaPageViewModel page) return;
             if (page.Tags is not IReadOnlyCollection<MetaTagViewModel> tags) return;
 
+            // 空白で単語を分けて検索する仕様（IgnoreCaseの仕様なので小文字にして渡す）
+            var lowerWords = word.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
             var collectionView = CollectionViewSource.GetDefaultView(tags);
-            collectionView.Filter = string.IsNullOrWhiteSpace(word)
-                ? static x =>
+            collectionView.Filter = lowerWords.Length > 0
+                ? x =>
+                {
+                    return (x as MetaTagViewModel).IsContainsAll(lowerWords);
+                }
+                : static x =>
                 {
                     (x as MetaTagViewModel).ClearColors();
                     return true;
-                }
-                : x =>
-                {
-                    var words = SplitFilterWords(word);
-                    return (x as MetaTagViewModel).IsContainsAll(words);
-                };
-
-            static IReadOnlyCollection<string> SplitFilterWords(string word) => word.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                }; 
         }
 
         private static void OnSelectedItemPropertyChanged(object? sender, EventArgs e)
@@ -67,12 +67,12 @@ namespace MetadataViewer.Views
                 e.Column = new DataGridTemplateColumn
                 {
                     Header = e.PropertyName,
-                    CellTemplate = GetColoredTextDataTemplate(e.PropertyName),
+                    CellTemplate = GetColoredTextDataTemplate(_propertyNameToDataTemplateDict, e.PropertyName),
                     IsReadOnly = true,
                 };
             }
 
-            DataTemplate GetColoredTextDataTemplate(string name)
+            static DataTemplate GetColoredTextDataTemplate(IDictionary<string, DataTemplate> dict, string name)
             {
                 static ParserContext GetParserContext()
                 {
@@ -91,10 +91,10 @@ namespace MetadataViewer.Views
                     return (DataTemplate)XamlReader.Load(sr, GetParserContext());
                 }
 
-                if (!_propertyNameToDataTemplateDict.TryGetValue(name, out var dataTemplate))
+                if (!dict.TryGetValue(name, out var dataTemplate))
                 {
                     dataTemplate = GetDataTemplate(name);
-                    _propertyNameToDataTemplateDict.Add(name, dataTemplate);
+                    dict.Add(name, dataTemplate);
                 }
                 return dataTemplate;
             }

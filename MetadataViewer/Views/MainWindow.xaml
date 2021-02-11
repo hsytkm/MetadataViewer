@@ -40,7 +40,7 @@
                    Text="{Binding FilePath.Value, Mode=OneWay, TargetNullValue={StaticResource FilePathDefaultMessage}}" />
 
         <TextBox x:Name="filterWordTextBox" DockPanel.Dock="Top" Margin="0,10"
-                 mah:TextBoxHelper.Watermark="Search..." />
+                 mah:TextBoxHelper.Watermark="Search... (ignore case)" />
 
         <local:MetaTabControl ItemsSource="{Binding MetaPages.Value, Mode=OneWay}"
                               FilterWord="{Binding Text, Mode=OneWay, Source={x:Reference Name=filterWordTextBox}}" />

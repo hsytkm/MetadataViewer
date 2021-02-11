@@ -24,7 +24,8 @@
 
     <TabControl.ContentTemplate>
         <DataTemplate>
-            <DataGrid CanUserReorderColumns="False" CanUserSortColumns="False"
+            <DataGrid IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False"
+                      CanUserReorderColumns="False" CanUserSortColumns="False" CanUserResizeRows="False"
                       ItemsSource="{Binding Tags, Mode=OneTime}"
                       AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" />
         </DataTemplate>

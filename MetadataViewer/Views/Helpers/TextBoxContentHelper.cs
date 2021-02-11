@@ -23,7 +23,7 @@ namespace MetadataViewer.Views.Helpers
             if (d is not TextBlock textBlock) return;
             if (e.NewValue is not ColoredText ct) return;
 
-            if (ct.ColoredRanges.Count > 0)     // Any()より速いと思う
+            if (ct.ColoredRanges.Count > 0)     // may be faster than Any()
             {
                 textBlock.Inlines.AddRange(CreateRuns(ct));
             }

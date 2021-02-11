@@ -35,30 +35,47 @@ namespace MetadataViewer.ViewModels
                     if (index < 0) continue;
 
                     for (var i = index; i < index + word.Length; ++i)
-                        isColoredChar[i] |= true;
+                        isColoredChar[i] = true;
                 }
 
-                // 色付けフラグをRangeに変換
-                int start = 0, end;
+                // 検索文字列を含まなければ終わり
+                if (isColoredChar.All(b => !b)) yield break;
+
+                // 色付けフラグをRangeに変換（まずは start の頭出し）
+                int startIndex, endIndex = 0;
                 do
                 {
-                    for (end = start + 1; end < isColoredChar.Length; ++end)
+                    startIndex = GetFirstTrueIndex(isColoredChar, endIndex);
+
+                    for (endIndex = startIndex + 1; endIndex < isColoredChar.Length; ++endIndex)
                     {
-                        if (isColoredChar[start] != isColoredChar[end])
+                        if (!isColoredChar[endIndex])   // true から false に変わった
+                        {
+                            yield return new Range(startIndex, endIndex);   // true の Range を返す
                             break;
+                        }
+                        else if (endIndex == isColoredChar.Length - 1)      // true のまま最終文字まで至った
+                        {
+                            yield return new Range(startIndex, endIndex + 1);
+                            break;
+                        }
                     }
-
-                    // 色付け文字列ならRangeに追加
-                    if (isColoredChar[start])
-                        yield return new Range(start, end);
-
-                    start = end;
                 }
-                while (end < isColoredChar.Length);
+                while (endIndex < isColoredChar.Length);
             }
             finally
             {
                 ArrayPool<bool>.Shared.Return(isColoredChar, clearArray: true);
+            }
+
+            // bool[] から true の index を頭出し
+            static int GetFirstTrueIndex(in ReadOnlySpan<bool> flags, int startIndex)
+            {
+                for (var i = startIndex; i < flags.Length; ++i)
+                {
+                    if (flags[i]) return i;
+                }
+                return flags.Length;
             }
         }
 
