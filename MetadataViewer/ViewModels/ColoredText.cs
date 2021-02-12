@@ -38,15 +38,10 @@ namespace MetadataViewer.ViewModels
                         isColoredChar[i] = true;
                 }
 
-                // 検索文字列を含まなければ終わり
-                if (isColoredChar.All(b => !b)) yield break;
-
                 // 色付けフラグをRangeに変換（まずは start の頭出し）
-                int startIndex, endIndex = 0;
-                do
+                int startIndex = GetFirstTrueIndex(isColoredChar, 0), endIndex;
+                while (startIndex < isColoredChar.Length)
                 {
-                    startIndex = GetFirstTrueIndex(isColoredChar, endIndex);
-
                     for (endIndex = startIndex + 1; endIndex < isColoredChar.Length; ++endIndex)
                     {
                         if (!isColoredChar[endIndex])   // true から false に変わった
@@ -60,8 +55,8 @@ namespace MetadataViewer.ViewModels
                             break;
                         }
                     }
+                    startIndex = GetFirstTrueIndex(isColoredChar, endIndex);
                 }
-                while (endIndex < isColoredChar.Length);
             }
             finally
             {

@@ -38,20 +38,8 @@ namespace MetadataViewer.Views
             if (tabControl.SelectedItem is not MetaPageViewModel page) return;
             if (page.Tags is not IReadOnlyCollection<MetaTagViewModel> tags) return;
 
-            // 空白で単語を分けて検索する仕様（IgnoreCaseの仕様なので小文字にして渡す）
-            var lowerWords = word.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
             var collectionView = CollectionViewSource.GetDefaultView(tags);
-            collectionView.Filter = lowerWords.Length > 0
-                ? x =>
-                {
-                    return (x as MetaTagViewModel).IsContainsAll(lowerWords);
-                }
-                : static x =>
-                {
-                    (x as MetaTagViewModel).ClearColors();
-                    return true;
-                }; 
+            collectionView.Filter = page.IsHitWord(word);
         }
 
         private static void OnSelectedItemPropertyChanged(object? sender, EventArgs e)
