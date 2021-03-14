@@ -23,9 +23,10 @@ namespace MetadataViewer.Views.Helpers
             if (d is not TextBlock textBlock) return;
             if (e.NewValue is not ColoredText ct) return;
 
-            if (ct.ColoredRanges.Count > 0)     // may be faster than Any()
+            if (ct.ColoredRanges.Count > 0)         // may be faster than Any()
             {
-                textBlock.Inlines.AddRange(CreateRuns(ct));
+                if (textBlock.Inlines.Count == 0)   // duplicate display when scrolling
+                    textBlock.Inlines.AddRange(CreateRuns(ct));
             }
             else
             {
