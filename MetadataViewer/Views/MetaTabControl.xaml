@@ -26,6 +26,7 @@
         <DataTemplate>
             <DataGrid IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False"
                       CanUserReorderColumns="False" CanUserSortColumns="False" CanUserResizeRows="False"
+                      ClipboardCopyMode="IncludeHeader"
                       ItemsSource="{Binding Tags, Mode=OneTime}"
                       AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" />
         </DataTemplate>

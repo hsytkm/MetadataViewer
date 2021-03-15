@@ -58,6 +58,16 @@ namespace MetadataViewer.Views
                     CellTemplate = GetColoredTextDataTemplate(_propertyNameToDataTemplateDict, e.PropertyName),
                     IsReadOnly = true,
                 };
+
+                // Ctrl+C もう少しマシな実装ないのかな？
+                e.Column.CopyingCellClipboardContent += (_, e2) =>
+                {
+                    if (e2.Item is MetaTagViewModel viewModel)
+                    {
+                        if (viewModel.GetType().GetProperty(e.PropertyName)?.GetValue(viewModel) is ColoredText ct)
+                            e2.Content = ct.Text;
+                    }
+                };
             }
 
             static DataTemplate GetColoredTextDataTemplate(IDictionary<string, DataTemplate> dict, string name)
