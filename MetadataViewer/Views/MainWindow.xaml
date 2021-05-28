@@ -1,54 +1,59 @@
-﻿<mah:MetroWindow  x:Class="MetadataViewer.Views.MainWindow"
-                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                  xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                  xmlns:local="clr-namespace:MetadataViewer.Views"
-                  xmlns:action="clr-namespace:MetadataViewer.Views.Actions"
-                  mc:Ignorable="d"
-                  ResizeMode="CanResizeWithGrip"
-                  TitleCharacterCasing="Normal"
-                  Title="MetadataExtractorViewer"
-                  Height="450" Width="800" >
+﻿<mah:MetroWindow
+    x:Class="MetadataViewer.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:action="clr-namespace:MetadataViewer.Views.Actions"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:MetadataViewer.Views"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+    Title="MetadataExtractorViewer"
+    Width="800"
+    Height="450"
+    ResizeMode="CanResizeWithGrip"
+    TitleCharacterCasing="Normal"
+    mc:Ignorable="d">
 
     <mah:MetroWindow.RightWindowCommands>
-        <mah:WindowCommands ShowLastSeparator="False" >
-            <Button Click="OpenMetadataExtractorOnGitHub"
-                    Content="metadata-extractor-dotnet" ToolTip="metadata-extractor-dotnet on GitHub" />
-            <Button Click="OpenMetadataExtractorOnNuget"
-                    ToolTip="metadata-extractor-dotnet on Nuget" >
+        <mah:WindowCommands ShowLastSeparator="False">
+            <Button
+                Click="OpenMetadataExtractorOnGitHub"
+                Content="metadata-extractor-dotnet"
+                ToolTip="metadata-extractor-dotnet on GitHub" />
+            <Button Click="OpenMetadataExtractorOnNuget" ToolTip="metadata-extractor-dotnet on Nuget">
                 <TextBlock Text="{Binding MetadataExtractorVersion, Mode=OneTime, StringFormat='Using ver {0}'}" />
             </Button>
         </mah:WindowCommands>
     </mah:MetroWindow.RightWindowCommands>
 
-    <DockPanel Margin="10" >
+    <DockPanel Margin="10">
         <Panel.Resources>
             <sys:String x:Key="FilePathDefaultMessage">Accepts file drop.</sys:String>
         </Panel.Resources>
-        
+
         <i:Interaction.Triggers>
-            <i:EventTrigger EventName="Drop" >
+            <i:EventTrigger EventName="Drop">
                 <action:GetDroppedFilePathAction DroppedPath="{Binding DroppedPath.Value, Mode=OneWayToSource}" />
             </i:EventTrigger>
         </i:Interaction.Triggers>
 
-        <TextBlock DockPanel.Dock="Top"
-                   Text="{Binding FilePath.Value, Mode=OneWay, TargetNullValue={StaticResource FilePathDefaultMessage}}" />
+        <TextBlock DockPanel.Dock="Top" Text="{Binding FilePath.Value, Mode=OneWay, TargetNullValue={StaticResource FilePathDefaultMessage}}" />
 
-        <TextBox x:Name="filterWordTextBox" DockPanel.Dock="Top" Margin="0,10"
-                 mah:TextBoxHelper.Watermark="Search... (ignore case)" >
+        <TextBox
+            x:Name="filterWordTextBox"
+            Margin="0,10"
+            mah:TextBoxHelper.Watermark="Search... (ignore case)"
+            DockPanel.Dock="Top">
             <TextBox.Style>
-                <Style BasedOn="{StaticResource MahApps.Styles.TextBox}" TargetType="{x:Type TextBox}" >
+                <Style BasedOn="{StaticResource MahApps.Styles.TextBox}" TargetType="{x:Type TextBox}">
                     <Setter Property="mah:TextBoxHelper.ClearTextButton" Value="True" />
                     <Style.Triggers>
-                        <Trigger Property="mah:TextBoxHelper.HasText" Value="False" >
+                        <Trigger Property="mah:TextBoxHelper.HasText" Value="False">
                             <Setter Property="mah:TextBoxHelper.ClearTextButton" Value="False" />
                         </Trigger>
-                        <Trigger Property="mah:TextBoxHelper.HasText" Value="True" >
+                        <Trigger Property="mah:TextBoxHelper.HasText" Value="True">
                             <Setter Property="mah:TextBoxHelper.ClearTextButton" Value="True" />
                         </Trigger>
                     </Style.Triggers>
@@ -56,8 +61,7 @@
             </TextBox.Style>
         </TextBox>
 
-        <local:MetaTabControl ItemsSource="{Binding MetaPages.Value, Mode=OneWay}"
-                              FilterWord="{Binding Text, Mode=OneWay, Source={x:Reference Name=filterWordTextBox}}" />
+        <local:MetaTabControl FilterWord="{Binding Text, Mode=OneWay, Source={x:Reference Name=filterWordTextBox}}" ItemsSource="{Binding MetaPages.Value, Mode=OneWay}" />
 
     </DockPanel>
 </mah:MetroWindow>

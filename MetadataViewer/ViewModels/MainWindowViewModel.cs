@@ -4,6 +4,7 @@ using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -15,7 +16,7 @@ namespace MetadataViewer.ViewModels
         public string MetadataExtractorVersion { get; } = MetaModel.GetMetadataExtractorVersion();
         public IReactiveProperty<string> FilePath { get; }
         public IReactiveProperty<string> DroppedPath { get; }
-        public IReadOnlyReactiveProperty<IReadOnlyCollection<MetaPageViewModel>> MetaPages { get; }
+        public IReadOnlyReactiveProperty<IImmutableList<MetaPageViewModel>> MetaPages { get; }
 
         public MainWindowViewModel(MetaModel metaModel)
         {
@@ -27,8 +28,8 @@ namespace MetadataViewer.ViewModels
 
             MetaPages = metaModel.SelectedBook
                 .Where(x => x is not null)
-                .Select(x => CreateMetaPages(x!).ToArray())
-                .ToReadOnlyReactivePropertySlim<IReadOnlyCollection<MetaPageViewModel>>()
+                .Select(x => (IImmutableList<MetaPageViewModel>)ImmutableArray.CreateRange(CreateMetaPages(x!)))
+                .ToReadOnlyReactivePropertySlim()
                 .AddTo(disposables);
 
 #if DEBUG
@@ -39,7 +40,7 @@ namespace MetadataViewer.ViewModels
         private static IEnumerable<MetaPageViewModel> CreateMetaPages(MetadataStorage.MetaBook book)
         {
             var pages = book.Pages.Select(p => new MetaPageViewModel(p)).ToArray();
-            var all = new MetaPageViewModel("All", pages.SelectMany(x => x.Tags));
+            var all = new MetaPageViewModel("All", pages.SelectMany(x => x.ColoredTextContainers));
             return pages.Prepend(all);
         }
     }

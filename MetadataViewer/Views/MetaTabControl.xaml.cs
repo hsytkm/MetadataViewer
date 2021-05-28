@@ -1,6 +1,8 @@
-﻿using MetadataViewer.ViewModels;
+﻿using MetadataViewer.Common;
+using MetadataViewer.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -35,11 +37,11 @@ namespace MetadataViewer.Views
 
         private static void OnFilterWordPropertyChanged(MetaTabControl tabControl, string word)
         {
-            if (tabControl.SelectedItem is not MetaPageViewModel page) return;
-            if (page.Tags is not IReadOnlyCollection<MetaTagViewModel> tags) return;
+            if (tabControl.SelectedItem is not ICompositeColoredTextCollection<MetaTagViewModel> page) return;
+            if (page.ColoredTextContainers is not IImmutableList<MetaTagViewModel> tags) return;
 
             var collectionView = CollectionViewSource.GetDefaultView(tags);
-            collectionView.Filter = page.IsHitWord(word);
+            collectionView.Filter = page.IsHitPredicate(word);
         }
 
         private static void OnSelectedItemPropertyChanged(object? sender, EventArgs e)
@@ -62,9 +64,9 @@ namespace MetadataViewer.Views
                 // Ctrl+C もう少しマシな実装ないのかな？
                 e.Column.CopyingCellClipboardContent += (_, e2) =>
                 {
-                    if (e2.Item is MetaTagViewModel viewModel)
+                    if (e2.Item is IColoredTextCollection coloredTextCollection)
                     {
-                        if (viewModel.GetType().GetProperty(e.PropertyName)?.GetValue(viewModel) is ColoredText ct)
+                        if (coloredTextCollection.GetType().GetProperty(e.PropertyName)?.GetValue(coloredTextCollection) is ColoredText ct)
                             e2.Content = ct.Text;
                     }
                 };

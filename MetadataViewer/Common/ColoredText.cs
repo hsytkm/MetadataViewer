@@ -3,7 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MetadataViewer.ViewModels
+namespace MetadataViewer.Common
 {
     public class ColoredText
     {
