@@ -3,7 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MetadataViewer.Common
+namespace MetadataViewer.Core
 {
     public class ColoredText
     {
@@ -64,7 +64,7 @@ namespace MetadataViewer.Common
             }
 
             // bool[] から true の index を頭出し
-            static int GetFirstTrueIndex(in ReadOnlySpan<bool> flags, int startIndex)
+            static int GetFirstTrueIndex(ReadOnlySpan<bool> flags, int startIndex)
             {
                 for (var i = startIndex; i < flags.Length; ++i)
                 {

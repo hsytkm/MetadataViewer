@@ -1,8 +1,9 @@
-﻿<prism:PrismApplication x:Class="MetadataViewer.App"
-                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                        xmlns:prism="http://prismlibrary.com/"
-                        DispatcherUnhandledException="Application_DispatcherUnhandledException" >
+﻿<prism:PrismApplication
+    x:Class="MetadataViewer.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:prism="http://prismlibrary.com/"
+    DispatcherUnhandledException="Application_DispatcherUnhandledException">
 
     <Application.Resources>
         <ResourceDictionary>
@@ -17,3 +18,4 @@
     </Application.Resources>
 
 </prism:PrismApplication>
+

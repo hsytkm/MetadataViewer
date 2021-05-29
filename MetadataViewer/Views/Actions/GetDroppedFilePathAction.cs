@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace MetadataViewer.Views.Actions
 {
-    class GetDroppedFilePathAction : TriggerAction<DependencyObject>
+    sealed class GetDroppedFilePathAction : TriggerAction<DependencyObject>
     {
         public static readonly DependencyProperty DroppedPathProperty =
             DependencyProperty.Register(nameof(DroppedPath), typeof(string), typeof(GetDroppedFilePathAction));

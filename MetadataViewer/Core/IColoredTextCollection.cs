@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 
-namespace MetadataViewer.Common
+namespace MetadataViewer.Core
 {
     interface IColoredTextCollection
     {

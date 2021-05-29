@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 
-namespace MetadataViewer.Common
+namespace MetadataViewer.Core
 {
     interface ICompositeColoredTextCollection<T> where T : IColoredTextCollection
     {

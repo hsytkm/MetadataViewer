@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
-namespace MetadataViewer.Common
+namespace MetadataViewer.Core
 {
     abstract record ColoredTextContainerBase : IColoredTextCollection
     {
@@ -24,7 +25,7 @@ namespace MetadataViewer.Common
                     var sb = new StringBuilder();
                     foreach (var coloredText in GetColoredTextProperties())
                     {
-                        sb.Append(coloredText.Text.ToLower());
+                        sb.Append(coloredText.Text.ToLower(CultureInfo.InvariantCulture));
                     }
                     _concatLowerText = sb.ToString();
                 }
@@ -41,8 +42,7 @@ namespace MetadataViewer.Common
         public bool ColorLetters(IReadOnlyCollection<string> words)
         {
             // words は Lower で通知される取り決め（高速化のため）
-            var hitCounter = CountHitWords(ConcatLowerText, words);
-            var isHitAll = hitCounter >= words.Count;
+            var isHitAll = IsHitAllWords(ConcatLowerText, words);
 
             if (!isHitAll)
             {
@@ -56,15 +56,15 @@ namespace MetadataViewer.Common
             }
             return isHitAll;
 
-            // 複数の検索文字列にヒットした数を返す
-            static int CountHitWords(string source, IReadOnlyCollection<string> words)
+            // 全ての検索文字列にヒットしかどうかを返します
+            static bool IsHitAllWords(string source, IReadOnlyCollection<string> words)
             {
-                var counter = 0;
                 foreach (var w in words)
                 {
-                    if (source.Contains(w)) counter++;
+                    if (!source.Contains(w))
+                        return false;
                 }
-                return counter;
+                return true;
             }
         }
 

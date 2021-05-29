@@ -1,6 +1,7 @@
-﻿using MetadataViewer.Common;
+﻿using MetadataViewer.Core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace MetadataViewer.ViewModels
 {
@@ -26,7 +27,7 @@ namespace MetadataViewer.ViewModels
         public MetaTagViewModel(MetadataStorage.MetaTag tag)
         {
             Group = new ColoredText(tag.PageName);
-            Id = new ColoredText("0x" + tag.Id.ToString("x4"));
+            Id = new ColoredText("0x" + tag.Id.ToString("x4", CultureInfo.InvariantCulture));
             Name = new ColoredText(tag.Name);
             Description = new ColoredText(tag.Description);
             Type = new ColoredText(tag.Data?.GetType().ToString() ?? "null");

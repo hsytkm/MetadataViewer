@@ -1,7 +1,6 @@
-﻿using MetadataViewer.Common;
+﻿using MetadataViewer.Core;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace MetadataViewer.ViewModels
@@ -20,7 +19,7 @@ namespace MetadataViewer.ViewModels
         }
 
         public MetaPageViewModel(MetadataStorage.MetaPage page)
-            : this(page.Name, ImmutableArray.CreateRange(page.Tags.Select(x => new MetaTagViewModel(x))))
+            : this(page.Name, page.Tags.Select(x => new MetaTagViewModel(x)))
         { }
 
     }

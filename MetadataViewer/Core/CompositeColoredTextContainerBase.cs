@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 
-namespace MetadataViewer.Common
+namespace MetadataViewer.Core
 {
     abstract record CompositeColoredTextContainerBase<T> : ICompositeColoredTextCollection<T>
          where T : IColoredTextCollection
@@ -22,17 +23,18 @@ namespace MetadataViewer.Common
         public Predicate<object> IsHitPredicate(string word)
         {
             // 空白で単語を分けて検索する（IgnoreCaseの仕様なので小文字化して渡す）
-            var lowerWords = word.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var lowerWords = word.ToLower(CultureInfo.InvariantCulture)
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
             return lowerWords.Length > 0
-                ? obj =>
-                {
-                    var container = obj as IColoredTextCollection;
+            ? obj =>
+            {
+                var container = obj as IColoredTextCollection;
 
-                    return (container is not null)
-                        ? container.ColorLetters(lowerWords)
-                        : false;
-                }
+                return (container is not null)
+                    ? container.ColorLetters(lowerWords)
+                    : false;
+            }
             : static obj =>
             {
                 (obj as IColoredTextCollection)?.ClearColors();

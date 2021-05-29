@@ -1,10 +1,10 @@
-﻿using MetadataViewer.Models;
+﻿using MetadataViewer.Common;
+using MetadataViewer.Models;
 using Prism.Mvvm;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -16,7 +16,7 @@ namespace MetadataViewer.ViewModels
         public string MetadataExtractorVersion { get; } = MetaModel.GetMetadataExtractorVersion();
         public IReactiveProperty<string> FilePath { get; }
         public IReactiveProperty<string> DroppedPath { get; }
-        public IReadOnlyReactiveProperty<IImmutableList<MetaPageViewModel>> MetaPages { get; }
+        public IReadOnlyReactiveProperty<CollectionSelectedItemPair<MetaPageViewModel>> MetaPages { get; }
 
         public MainWindowViewModel(MetaModel metaModel)
         {
@@ -28,7 +28,7 @@ namespace MetadataViewer.ViewModels
 
             MetaPages = metaModel.SelectedBook
                 .Where(x => x is not null)
-                .Select(x => (IImmutableList<MetaPageViewModel>)ImmutableArray.CreateRange(CreateMetaPages(x!)))
+                .Select(x => CollectionSelectedItemPair.Create(CreateMetaPages(x!)))
                 .ToReadOnlyReactivePropertySlim()
                 .AddTo(disposables);
 
