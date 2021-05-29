@@ -1,6 +1,6 @@
 ﻿using MetadataViewer.Views;
+using Prism.DryIoc;
 using Prism.Ioc;
-using Prism.Unity;
 using System;
 using System.Windows;
 using System.Windows.Threading;
