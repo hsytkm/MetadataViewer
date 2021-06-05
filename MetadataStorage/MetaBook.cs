@@ -24,7 +24,7 @@ namespace MetadataStorage
         }
 
         private static Extensions GetExtension(string filePath)
-            => Path.GetExtension(filePath).ToLower() switch
+            => Path.GetExtension(filePath).ToLowerInvariant() switch
             {
                 ".jpg" or ".jpeg" => Extensions.Jpeg,
                 ".bmp" => Extensions.Bmp,

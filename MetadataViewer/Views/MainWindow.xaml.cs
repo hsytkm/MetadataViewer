@@ -12,7 +12,8 @@ namespace MetadataViewer.Views
             InitializeComponent();
         }
 
-        private static void ProcessStart(string url) => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        private static void ProcessStart(string url)
+            => Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
 
         private void OpenMetadataExtractorOnNuget(object sender, RoutedEventArgs e)
             => ProcessStart("https://www.nuget.org/packages/MetadataExtractor/");

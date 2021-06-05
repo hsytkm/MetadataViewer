@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace MetadataViewer.Core
 {
+    /// <summary>
+    /// 文字列を色付け位置込みで管理する
+    /// </summary>
     public class ColoredText
     {
         private static readonly IReadOnlyCollection<Range> _empty = Array.Empty<Range>();
@@ -17,9 +20,9 @@ namespace MetadataViewer.Core
 
         public ColoredText(string text) => (Text, ColoredRanges) = (text, _empty);
 
-        /// <summary>文字列と検索ワードから色付け文字の位置を求めます</summary>
+        /// <summary>文字列と検索語から色付け文字の位置を求めます</summary>
         /// <param name="sourceText">ヒットの対象文字列</param>
-        /// <param name="words">検索ワード</param>
+        /// <param name="words">検索語</param>
         /// <returns>色付け文字の位置</returns>
         private static IEnumerable<Range> FilterByWords(string sourceText, IReadOnlyCollection<string> words)
         {
@@ -74,7 +77,7 @@ namespace MetadataViewer.Core
             }
         }
 
-        /// <summary>文字列と検索ワードから色付け文字の位置を更新します</summary>
+        /// <summary>文字列と検索語から色付け文字の位置を更新します</summary>
         public void FilterWords(IReadOnlyCollection<string> words) => ColoredRanges = FilterByWords(Text, words).ToArray();
 
         public void Clear() => ColoredRanges = _empty;

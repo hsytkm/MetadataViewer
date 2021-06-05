@@ -47,9 +47,9 @@ namespace MetadataViewer.Views.Behaviors
                 // Ctrl+C もう少しマシな実装ないのかな？
                 e.Column.CopyingCellClipboardContent += (_, e2) =>
                 {
-                    if (e2.Item is IColoredTextCollection coloredTextCollection)
+                    if (e2.Item is ICompositeColoredText container)
                     {
-                        if (coloredTextCollection.GetType().GetProperty(e.PropertyName)?.GetValue(coloredTextCollection) is ColoredText ct)
+                        if (container.GetType().GetProperty(e.PropertyName)?.GetValue(container) is ColoredText ct)
                             e2.Content = ct.Text;
                     }
                 };

@@ -16,7 +16,7 @@ namespace MetadataViewer.ViewModels
         public string MetadataExtractorVersion { get; } = MetaModel.GetMetadataExtractorVersion();
         public IReactiveProperty<string> FilePath { get; }
         public IReactiveProperty<string> DroppedPath { get; }
-        public IReadOnlyReactiveProperty<CollectionSelectedItemPair<MetaPageViewModel>> MetaPages { get; }
+        public IReadOnlyReactiveProperty<CollectionSelectedItemPair<MetaTagsPageViewModel>> MetaPages { get; }
 
         public MainWindowViewModel(MetaModel metaModel)
         {
@@ -37,10 +37,10 @@ namespace MetadataViewer.ViewModels
 #endif
         }
 
-        private static IEnumerable<MetaPageViewModel> CreateMetaPages(MetadataStorage.MetaBook book)
+        private static IEnumerable<MetaTagsPageViewModel> CreateMetaPages(MetadataStorage.MetaBook book)
         {
-            var pages = book.Pages.Select(p => new MetaPageViewModel(p)).ToArray();
-            var all = new MetaPageViewModel("All", pages.SelectMany(x => x.ColoredTextContainers));
+            var pages = book.Pages.Select(p => new MetaTagsPageViewModel(p)).ToArray();
+            var all = new MetaTagsPageViewModel("All", pages.SelectMany(x => x.Collection));
             return pages.Prepend(all);
         }
     }

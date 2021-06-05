@@ -3,18 +3,17 @@ using System.Collections.Immutable;
 
 namespace MetadataViewer.Core
 {
-    interface ICompositeColoredTextCollection<T> where T : IColoredTextCollection
+    /// <summary>
+    /// ICompositeColoredText のコレクションを保持します。
+    /// 派生クラスは View における DataGrid の ItemsSource になります。
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    interface ICompositeColoredTextCollection<T> where T : ICompositeColoredText
     {
         /// <summary>
-        /// 検索対象のコレクション
+        /// ICompositeColoredText のコレクションです。
+        /// DataGrid の ItemsSource になります。
         /// </summary>
-        IImmutableList<T> ColoredTextContainers { get; }
-
-        /// <summary>
-        /// 引数の検索語がTagにヒットするかを判定する Predicate を返します。
-        /// </summary>
-        /// <param name="word"></param>
-        /// <returns>検索語のヒットを判定する Predicate</returns>
-        Predicate<object> IsHitPredicate(string word);
+        IImmutableList<T> Collection { get; }
     }
 }

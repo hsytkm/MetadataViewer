@@ -4,7 +4,8 @@ using System.Text;
 
 namespace MetadataViewer.Core
 {
-    abstract record ColoredTextContainerBase : IColoredTextCollection
+    /// <inheritdoc cref="ICompositeColoredText"/>
+    abstract record CompositeColoredTextBase : ICompositeColoredText
     {
         /// <summary>
         /// 継承レコードの ColoredText プロパティを返します。
@@ -25,14 +26,14 @@ namespace MetadataViewer.Core
                     var sb = new StringBuilder();
                     foreach (var coloredText in GetColoredTextProperties())
                     {
-                        sb.Append(coloredText.Text.ToLower(CultureInfo.InvariantCulture));
+                        sb.Append(coloredText.Text.ToLowerInvariant());
                     }
                     _concatLowerText = sb.ToString();
                 }
                 return _concatLowerText;
             }
         }
-        private string? _concatLowerText = null;
+        private string? _concatLowerText;
 
         /// <summary>
         /// 引数の文字列にヒットする文字列に色を付けます</summary>

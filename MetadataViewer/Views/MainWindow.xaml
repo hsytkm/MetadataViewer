@@ -92,7 +92,7 @@
                         CanUserSortColumns="False"
                         ClipboardCopyMode="IncludeHeader"
                         IsReadOnly="True"
-                        ItemsSource="{Binding ColoredTextContainers, Mode=OneTime}">
+                        ItemsSource="{Binding Collection, Mode=OneTime}">
                         <i:Interaction.Behaviors>
                             <behavior:ColoredTextGeneratingColumnBehavior />
                         </i:Interaction.Behaviors>

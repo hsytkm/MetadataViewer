@@ -5,7 +5,11 @@ using System.Globalization;
 
 namespace MetadataViewer.ViewModels
 {
-    record MetaTagViewModel : ColoredTextContainerBase
+    /// <summary>
+    /// 各メタページ（Exif / MakerNote）内のメタタグです。
+    /// DataGrid の Row になります。
+    /// </summary>
+    record MetaTagItemViewModel : CompositeColoredTextBase
     {
         public ColoredText Group { get; }
         public ColoredText Id { get; }
@@ -24,7 +28,7 @@ namespace MetadataViewer.ViewModels
             yield return Data;
         }
 
-        public MetaTagViewModel(MetadataStorage.MetaTag tag)
+        public MetaTagItemViewModel(MetadataStorage.MetaTag tag)
         {
             Group = new ColoredText(tag.PageName);
             Id = new ColoredText("0x" + tag.Id.ToString("x4", CultureInfo.InvariantCulture));
