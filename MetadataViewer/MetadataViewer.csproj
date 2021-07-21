@@ -12,9 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-      <PackageReference Include="MahApps.Metro" Version="2.4.5" />
+      <PackageReference Include="MahApps.Metro" Version="2.4.7" />
       <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
-      <PackageReference Include="ReactiveProperty.WPF" Version="7.10.0" />
+      <PackageReference Include="ReactiveProperty.WPF" Version="7.11.0" />
   </ItemGroup>
 
   <ItemGroup>
