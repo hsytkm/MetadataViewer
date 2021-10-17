@@ -29,7 +29,8 @@ namespace MetadataViewer.Core
             if (string.IsNullOrEmpty(sourceText)) yield break;
 
             // char毎に色付けフラグを作る (yield内ではSpan使えないのでArrayPool)
-            var isColoredChar = ArrayPool<bool>.Shared.Rent(sourceText.Length);
+            var isColoredCharLength = sourceText.Length;
+            var isColoredChar = ArrayPool<bool>.Shared.Rent(isColoredCharLength);
             try
             {
                 foreach (var word in words)
@@ -43,16 +44,16 @@ namespace MetadataViewer.Core
 
                 // 色付けフラグをRangeに変換（まずは start の頭出し）
                 int startIndex = GetFirstTrueIndex(isColoredChar, 0), endIndex;
-                while (startIndex < isColoredChar.Length)
+                while (startIndex < isColoredCharLength)
                 {
-                    for (endIndex = startIndex + 1; endIndex < isColoredChar.Length; ++endIndex)
+                    for (endIndex = startIndex + 1; endIndex < isColoredCharLength; ++endIndex)
                     {
                         if (!isColoredChar[endIndex])   // true から false に変わった
                         {
                             yield return new Range(startIndex, endIndex);   // true の Range を返す
                             break;
                         }
-                        else if (endIndex == isColoredChar.Length - 1)      // true のまま最終文字まで至った
+                        else if (endIndex == isColoredCharLength - 1)      // true のまま最終文字まで至った
                         {
                             yield return new Range(startIndex, endIndex + 1);
                             break;
