@@ -2,6 +2,7 @@
 using Microsoft.Xaml.Behaviors;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -25,12 +26,27 @@ namespace MetadataViewer.Views.Behaviors
         {
             base.OnAttached();
             AssociatedObject.AutoGeneratingColumn += AssociatedObject_AutoGeneratingColumn;
+            AssociatedObject.Columns.CollectionChanged += Columns_CollectionChanged;
         }
 
         protected override void OnDetaching()
         {
             AssociatedObject.AutoGeneratingColumn -= AssociatedObject_AutoGeneratingColumn;
+            AssociatedObject.Columns.CollectionChanged -= Columns_CollectionChanged;
+
+            foreach (var column in AssociatedObject.Columns)
+                column.CopyingCellClipboardContent -= CopyToClipboard;
+
             base.OnDetaching();
+        }
+
+        private static void Columns_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
+            {
+                foreach (DataGridColumn column in e.OldItems)
+                    column.CopyingCellClipboardContent -= CopyToClipboard;
+            }
         }
 
         private void AssociatedObject_AutoGeneratingColumn(object? sender, DataGridAutoGeneratingColumnEventArgs e)
@@ -45,14 +61,7 @@ namespace MetadataViewer.Views.Behaviors
                 };
 
                 // Ctrl+C もう少しマシな実装ないのかな？
-                e.Column.CopyingCellClipboardContent += (_, e2) =>
-                {
-                    if (e2.Item is ICompositeColoredText container)
-                    {
-                        if (container.GetType().GetProperty(e.PropertyName)?.GetValue(container) is ColoredText ct)
-                            e2.Content = ct.Text;
-                    }
-                };
+                e.Column.CopyingCellClipboardContent += CopyToClipboard;
             }
 
             static DataTemplate GetColoredTextDataTemplate(IDictionary<string, DataTemplate> dict, string propertyName)
@@ -85,6 +94,22 @@ namespace MetadataViewer.Views.Behaviors
                 }
                 return dataTemplate;
             }
+        }
+
+        // Ctrl+C 対応
+        private static void CopyToClipboard(object? sender, DataGridCellClipboardEventArgs e)
+        {
+            if (sender is not DataGridTemplateColumn column)
+                return;
+
+            if (e.Item is not ICompositeColoredText container)
+                return;
+
+            if (column.Header is not string propName)
+                throw new NotSupportedException("Cannot get property name.");
+
+            if (container.GetType().GetProperty(propName)?.GetValue(container) is ColoredText ct)
+                e.Content = ct.Text;
         }
     }
 

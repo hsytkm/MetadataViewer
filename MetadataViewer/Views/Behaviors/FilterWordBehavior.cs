@@ -96,8 +96,13 @@ namespace MetadataViewer.Views.Behaviors
         /// <summary>SelectedItem変化時の絞り込み</summary>
         private static void AssociatedObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is not TabControl tabControl) return;
-            OnFilterWordPropertyChanged(tabControl);
+            // 以下の条件がないと子要素(メタ情報)の選択変化で以降の処理が実行される。
+            // そうすると Ctrl+C, Ctrl+A などがほとんど効かなくなる。原因不明…
+            if (!e.AddedItems.OfType<MetaTagsPageViewModel>().Any())
+                return;
+
+            if (sender is TabControl tabControl)
+                OnFilterWordPropertyChanged(tabControl);
         }
     }
 
