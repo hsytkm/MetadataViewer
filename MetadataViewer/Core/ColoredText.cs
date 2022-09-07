@@ -24,15 +24,20 @@ namespace MetadataViewer.Core
         /// <param name="sourceText">ヒットの対象文字列</param>
         /// <param name="words">検索語</param>
         /// <returns>色付け文字の位置</returns>
-        private static IEnumerable<Range> FilterByWords(string sourceText, IReadOnlyCollection<string> words)
+        private static IReadOnlyList<Range> FilterByWords(string sourceText, IReadOnlyCollection<string> words)
         {
-            if (string.IsNullOrEmpty(sourceText)) yield break;
+            if (string.IsNullOrWhiteSpace(sourceText))
+                return Array.Empty<Range>();
 
             // char毎に色付けフラグを作る (yield内ではSpan使えないのでArrayPool)
             var isColoredCharLength = sourceText.Length;
-            var isColoredChar = ArrayPool<bool>.Shared.Rent(isColoredCharLength);
+            var isColoredCharArray = ArrayPool<bool>.Shared.Rent(isColoredCharLength);
+            Span<bool> isColoredChar = isColoredCharArray.AsSpan()[0..isColoredCharLength];
             try
             {
+                var ranges = new List<Range>(words.Count);
+
+                // ヒットした文字列をフラグで管理(同じ文字が複数ヒットした場合に対応していません。Analog なら3文字目の a にヒットしません)
                 foreach (var word in words)
                 {
                     var index = sourceText.IndexOf(word, StringComparison.OrdinalIgnoreCase);
@@ -46,25 +51,27 @@ namespace MetadataViewer.Core
                 int startIndex = GetFirstTrueIndex(isColoredChar, 0), endIndex;
                 while (startIndex < isColoredCharLength)
                 {
-                    for (endIndex = startIndex + 1; endIndex < isColoredCharLength; ++endIndex)
+                    for (endIndex = startIndex + 1; endIndex <= isColoredCharLength; endIndex++)
                     {
-                        if (!isColoredChar[endIndex])   // true から false に変わった
+                        if (endIndex == isColoredCharLength || !isColoredChar[endIndex])   // true から false に変わった
                         {
-                            yield return new Range(startIndex, endIndex);   // true の Range を返す
+                            ranges.Add(new Range(startIndex, endIndex));    // true の Range を返す
                             break;
                         }
                         else if (endIndex == isColoredCharLength - 1)      // true のまま最終文字まで至った
                         {
-                            yield return new Range(startIndex, endIndex + 1);
+                            endIndex++;
+                            ranges.Add(new Range(startIndex, endIndex));
                             break;
                         }
                     }
                     startIndex = GetFirstTrueIndex(isColoredChar, endIndex);
                 }
+                return ranges;
             }
             finally
             {
-                ArrayPool<bool>.Shared.Return(isColoredChar, clearArray: true);
+                ArrayPool<bool>.Shared.Return(isColoredCharArray, clearArray: true);
             }
 
             // bool[] から true の index を頭出し
@@ -79,7 +86,7 @@ namespace MetadataViewer.Core
         }
 
         /// <summary>文字列と検索語から色付け文字の位置を更新します</summary>
-        public void FilterWords(IReadOnlyCollection<string> words) => ColoredRanges = FilterByWords(Text, words).ToArray();
+        public void FilterWords(IReadOnlyCollection<string> words) => ColoredRanges = FilterByWords(Text, words);
 
         public void Clear() => ColoredRanges = _empty;
     }
