@@ -3,19 +3,17 @@
 namespace MetadataViewer.Core;
 
 /// <summary>
-/// 文字列を色付け位置込みで管理する
+/// 文字列を色付け位置込みで管理します
 /// </summary>
-public sealed class ColoredText
+internal sealed class ColoredText : IColoredText
 {
-    private static readonly IReadOnlyCollection<Range> _empty = Array.Empty<Range>();
-
     /// <summary>表示テキスト</summary>
-    public string Text { get; }
+    public string SourceText { get; }
 
     /// <summary>色付け文字の位置管理</summary>
-    public IReadOnlyCollection<Range> ColoredRanges { get; private set; }
+    public IReadOnlyList<Range> ColoredRanges { get; private set; }
 
-    public ColoredText(string text) => (Text, ColoredRanges) = (text, _empty);
+    public ColoredText(string text) => (SourceText, ColoredRanges) = (text, []);
 
     /// <summary>文字列と検索語から色付け文字の位置を求めます</summary>
     /// <param name="sourceText">ヒットの対象文字列</param>
@@ -24,7 +22,7 @@ public sealed class ColoredText
     private static IReadOnlyList<Range> FilterByWords(string sourceText, IReadOnlyCollection<string> words)
     {
         if (string.IsNullOrWhiteSpace(sourceText))
-            return Array.Empty<Range>();
+            return [];
 
         // char毎に色付けフラグを作る (yield内ではSpan使えないのでArrayPool)
         var isColoredCharLength = sourceText.Length;
@@ -45,7 +43,7 @@ public sealed class ColoredText
             }
 
             // 色付けフラグをRangeに変換（まずは start の頭出し）
-            int startIndex = GetFirstTrueIndex(isColoredChar, 0), endIndex;
+            int startIndex = getFirstTrueIndex(isColoredChar, 0), endIndex;
             while (startIndex < isColoredCharLength)
             {
                 for (endIndex = startIndex + 1; endIndex <= isColoredCharLength; endIndex++)
@@ -62,7 +60,7 @@ public sealed class ColoredText
                         break;
                     }
                 }
-                startIndex = GetFirstTrueIndex(isColoredChar, endIndex);
+                startIndex = getFirstTrueIndex(isColoredChar, endIndex);
             }
             return ranges;
         }
@@ -72,7 +70,7 @@ public sealed class ColoredText
         }
 
         // bool[] から true の index を頭出し
-        static int GetFirstTrueIndex(ReadOnlySpan<bool> flags, int startIndex)
+        static int getFirstTrueIndex(ReadOnlySpan<bool> flags, int startIndex)
         {
             for (var i = startIndex; i < flags.Length; ++i)
             {
@@ -83,7 +81,8 @@ public sealed class ColoredText
     }
 
     /// <summary>文字列と検索語から色付け文字の位置を更新します</summary>
-    public void FilterWords(IReadOnlyCollection<string> words) => ColoredRanges = FilterByWords(Text, words);
+    public void FilterWords(IReadOnlyCollection<string> words) => ColoredRanges = FilterByWords(SourceText, words);
 
-    public void Clear() => ColoredRanges = _empty;
+    /// <summary>色付けをクリアします</summary>
+    public void ClearColor() => ColoredRanges = [];
 }

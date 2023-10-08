@@ -6,12 +6,6 @@ namespace MetadataViewer.Core;
 internal abstract record CompositeColoredTextBase : ICompositeColoredText
 {
     /// <summary>
-    /// 継承レコードの ColoredText プロパティを返します。
-    /// </summary>
-    /// <returns></returns>
-    protected abstract IEnumerable<ColoredText> GetColoredTextProperties();
-
-    /// <summary>
     /// 検索の高速化用に 各ColoredText を連結した文字列を保持しておきます。
     /// IgnoreCase の仕様なので Lower です。
     /// </summary>
@@ -22,10 +16,12 @@ internal abstract record CompositeColoredTextBase : ICompositeColoredText
             if (_concatLowerText is null)
             {
                 var sb = new StringBuilder();
-                foreach (var coloredText in GetColoredTextProperties())
+                foreach (var coloredText in this)
                 {
-                    sb.Append(coloredText.Text.ToLowerInvariant());
-                    sb.Append(CompositeColoredText.Separator);      // ワードが密着すると意図通りに色付けされない
+                    sb.Append(coloredText.SourceText.ToLowerInvariant());
+
+                    // ワードが密着すると意図通りに色付けされません
+                    sb.Append(CompositeColoredText.Separator);
                 }
                 _concatLowerText = sb.ToString();
             }
@@ -35,24 +31,24 @@ internal abstract record CompositeColoredTextBase : ICompositeColoredText
     private string? _concatLowerText;
 
     /// <summary>
-    /// 引数の文字列にヒットする文字列に色を付けます</summary>
+    /// 引数の文字列にヒットする文字列に色を付けます
     /// </summary>
     /// <param name="words">色を付ける文字列</param>
     /// <returns>引数の文字列を全て含むかどうかフラグ</returns>
-    public bool ColorLetters(IReadOnlyCollection<string> words)
+    public bool ColorLetters(IReadOnlyCollection<string> coloringLowerWords)
     {
         // words は Lower で通知される取り決め（高速化のため）
-        var isHitAll = IsHitAllWords(ConcatLowerText, words);
+        var isHitAll = IsHitAllWords(ConcatLowerText, coloringLowerWords);
 
         if (!isHitAll)
         {
-            ClearColors();
+            ClearColorTexts();
         }
         else
         {
             // 文字列のヒット位置を更新
-            foreach (var prop in GetColoredTextProperties())
-                prop.FilterWords(words);
+            foreach (var prop in this)
+                prop.FilterWords(coloringLowerWords);
         }
         return isHitAll;
 
@@ -71,9 +67,12 @@ internal abstract record CompositeColoredTextBase : ICompositeColoredText
     /// <summary>
     /// 文字列の色付けを解除します
     /// </summary>
-    public void ClearColors()
+    public void ClearColorTexts()
     {
-        foreach (var prop in GetColoredTextProperties())
-            prop.Clear();
+        foreach (var prop in this)
+            prop.ClearColor();
     }
+
+    public abstract IEnumerator<IColoredText> GetEnumerator();
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 }

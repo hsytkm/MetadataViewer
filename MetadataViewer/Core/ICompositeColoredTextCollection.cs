@@ -7,11 +7,11 @@ namespace MetadataViewer.Core;
 /// 派生クラスは View における DataGrid の ItemsSource になります。
 /// </summary>
 /// <typeparam name="T"></typeparam>
-internal interface ICompositeColoredTextCollection<T> where T : ICompositeColoredText
+internal interface ICompositeColoredTextCollection
 {
     /// <summary>
     /// ICompositeColoredText のコレクションです。
     /// DataGrid の ItemsSource になります。
     /// </summary>
-    IImmutableList<T> Collection { get; }
+    IReadOnlyList<ICompositeColoredText> ColoredTexts { get; }
 }

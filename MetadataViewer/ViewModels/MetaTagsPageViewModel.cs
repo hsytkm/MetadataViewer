@@ -7,19 +7,19 @@ namespace MetadataViewer.ViewModels;
 /// メタページ（Exif / MakerNote など）のコレクションです。
 /// DataGrid の ItemsSource になります。
 /// </summary>
-internal sealed record MetaTagsPageViewModel : ICompositeColoredTextCollection<MetaTagItemViewModel>
+internal sealed record MetaTagsPageViewModel : ICompositeColoredTextCollection
 {
     public string Name { get; }
-    public IImmutableList<MetaTagItemViewModel> Collection { get; }
+    public IReadOnlyList<MetaTagItemViewModel> ItemsSource { get; }
+    public IReadOnlyList<ICompositeColoredText> ColoredTexts => ItemsSource;
 
     public MetaTagsPageViewModel(string name, IEnumerable<MetaTagItemViewModel> items)
     {
         Name = name;
-        Collection = ImmutableArray.CreateRange(items);
+        ItemsSource = items.ToArray();
     }
 
     public MetaTagsPageViewModel(MetadataStorage.MetaPage page)
         : this(page.Name, page.Tags.Select(x => new MetaTagItemViewModel(x)))
     { }
-
 }

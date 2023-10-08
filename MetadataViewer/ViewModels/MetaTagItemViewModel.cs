@@ -9,22 +9,12 @@ namespace MetadataViewer.ViewModels;
 /// </summary>
 internal sealed record MetaTagItemViewModel : CompositeColoredTextBase
 {
-    public ColoredText Group { get; }
-    public ColoredText Id { get; }
-    public ColoredText Name { get; }
-    public ColoredText Description { get; }
-    public ColoredText Type { get; }
-    public ColoredText Data { get; }
-
-    protected override IEnumerable<ColoredText> GetColoredTextProperties()
-    {
-        yield return Group;
-        yield return Id;
-        yield return Name;
-        yield return Description;
-        yield return Type;
-        yield return Data;
-    }
+    public IColoredText Group { get; }
+    public IColoredText Id { get; }
+    public IColoredText Name { get; }
+    public IColoredText Description { get; }
+    public IColoredText Type { get; }
+    public IColoredText Data { get; }
 
     public MetaTagItemViewModel(MetadataStorage.MetaTag tag)
     {
@@ -34,5 +24,15 @@ internal sealed record MetaTagItemViewModel : CompositeColoredTextBase
         Description = new ColoredText(tag.Description);
         Type = new ColoredText(tag.Data?.GetType().ToString() ?? "null");
         Data = new ColoredText(tag.Data?.ToString() ?? "null");
+    }
+
+    public override IEnumerator<IColoredText> GetEnumerator()
+    {
+        yield return Group;
+        yield return Id;
+        yield return Name;
+        yield return Description;
+        yield return Type;
+        yield return Data;
     }
 }

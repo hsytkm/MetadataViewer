@@ -73,7 +73,7 @@
             </TabControl.Resources>
 
             <i:Interaction.Behaviors>
-                <behavior:MetaTagSelectorFilterWordBehavior FilterWord="{Binding Text, Mode=OneWay, Source={x:Reference Name=filterWordTextBox}}" />
+                <behavior:TabControlFilterWordBehavior FilterWord="{Binding Text, Mode=OneWay, Source={x:Reference Name=filterWordTextBox}}" />
             </i:Interaction.Behaviors>
 
             <TabControl.ItemTemplate>
@@ -92,7 +92,7 @@
                         CanUserSortColumns="False"
                         ClipboardCopyMode="IncludeHeader"
                         IsReadOnly="True"
-                        ItemsSource="{Binding Collection, Mode=OneTime}">
+                        ItemsSource="{Binding ItemsSource, Mode=OneTime}">
                         <i:Interaction.Behaviors>
                             <behavior:ColoredTextGeneratingColumnBehavior />
                         </i:Interaction.Behaviors>

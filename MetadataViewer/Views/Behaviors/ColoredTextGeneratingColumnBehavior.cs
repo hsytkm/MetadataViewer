@@ -49,7 +49,7 @@ internal sealed class ColoredTextGeneratingColumnBehavior : Behavior<DataGrid>
 
     private void AssociatedObject_AutoGeneratingColumn(object? sender, DataGridAutoGeneratingColumnEventArgs e)
     {
-        if (e.PropertyType == typeof(ColoredText))
+        if (e.PropertyType == typeof(IColoredText))
         {
             e.Column = new DataGridTemplateColumn
             {
@@ -106,8 +106,8 @@ internal sealed class ColoredTextGeneratingColumnBehavior : Behavior<DataGrid>
         if (column.Header is not string propName)
             throw new NotSupportedException("Cannot get property name.");
 
-        if (container.GetType().GetProperty(propName)?.GetValue(container) is ColoredText ct)
-            e.Content = ct.Text;
+        if (container.GetType().GetProperty(propName)?.GetValue(container) is IColoredText ct)
+            e.Content = ct.SourceText;
     }
 }
 
@@ -120,16 +120,19 @@ public sealed class ColoredTextBlockContentHelper : DependencyObject
     internal const string ColoredTextItem = nameof(ColoredTextItem);
 
     public static readonly DependencyProperty ColoredTextItemProperty =
-        DependencyProperty.RegisterAttached(ColoredTextItem, typeof(ColoredText), typeof(ColoredTextBlockContentHelper),
+        DependencyProperty.RegisterAttached(ColoredTextItem, typeof(IColoredText), typeof(ColoredTextBlockContentHelper),
             new FrameworkPropertyMetadata(null, OnColoredTextItemsPropertyChanged));
 
-    public static ColoredText GetColoredTextItem(DependencyObject obj) => (ColoredText)obj.GetValue(ColoredTextItemProperty);
-    public static void SetColoredTextItem(DependencyObject obj, ColoredText value) => obj.SetValue(ColoredTextItemProperty, value);
+    public static IColoredText GetColoredTextItem(DependencyObject obj) => (IColoredText)obj.GetValue(ColoredTextItemProperty);
+    public static void SetColoredTextItem(DependencyObject obj, IColoredText value) => obj.SetValue(ColoredTextItemProperty, value);
 
     private static void OnColoredTextItemsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is not TextBlock textBlock) return;
-        if (e.NewValue is not ColoredText ct) return;
+        if (d is not TextBlock textBlock)
+            return;
+
+        if (e.NewValue is not IColoredText ct)
+            return;
 
         if (ct.ColoredRanges.Count > 0)         // may be faster than Any()
         {
@@ -140,12 +143,12 @@ public sealed class ColoredTextBlockContentHelper : DependencyObject
         }
         else
         {
-            textBlock.Text = ct.Text;
+            textBlock.Text = ct.SourceText;
         }
 
-        static IEnumerable<Run> CreateRuns(ColoredText ct)
+        static IEnumerable<Run> CreateRuns(IColoredText ct)
         {
-            var sourceText = ct.Text;
+            var sourceText = ct.SourceText;
             var index = 0;
             foreach (var range in ct.ColoredRanges)
             {

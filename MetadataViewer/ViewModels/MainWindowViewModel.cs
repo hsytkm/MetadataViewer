@@ -25,7 +25,7 @@ internal sealed class MainWindowViewModel : BindableBase
 
         MetaPages = metaModel.SelectedBook
             .Where(x => x is not null)
-            .Select(x => CollectionSelectedItemPair.Create(CreateMetaPages(x!)))
+            .Select(x => CollectionSelectedItemPair.Create(CreateMetaPageVms(x!)))
             .ToReadOnlyReactivePropertySlim()
             .AddTo(disposables);
 
@@ -34,10 +34,10 @@ internal sealed class MainWindowViewModel : BindableBase
 #endif
     }
 
-    private static IEnumerable<MetaTagsPageViewModel> CreateMetaPages(MetadataStorage.MetaBook book)
+    private static IEnumerable<MetaTagsPageViewModel> CreateMetaPageVms(MetadataStorage.MetaBook book)
     {
         var pages = book.Pages.Select(p => new MetaTagsPageViewModel(p)).ToArray();
-        var all = new MetaTagsPageViewModel("All", pages.SelectMany(x => x.Collection));
+        var all = new MetaTagsPageViewModel("All", pages.SelectMany(x => x.ItemsSource));
         return pages.Prepend(all);
     }
 }
