@@ -1,4 +1,5 @@
 ﻿using MetadataViewer.Core;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace MetadataViewer.ViewModels;
@@ -7,8 +8,10 @@ namespace MetadataViewer.ViewModels;
 /// 各メタページ（Exif / MakerNote）内のメタタグです。
 /// DataGrid の Row になります。
 /// </summary>
-internal sealed record MetaTagItemViewModel : CompositeColoredTextBase
+internal sealed class MetaTagItemViewModel : INotifyPropertyChanged, ICompositeColoredText
 {
+    private readonly CompositeColoredTextHelper _coloredTextHelper;
+
     public IColoredText Group { get; }
     public IColoredText Id { get; }
     public IColoredText Name { get; }
@@ -24,9 +27,11 @@ internal sealed record MetaTagItemViewModel : CompositeColoredTextBase
         Description = new ColoredText(tag.Description);
         Type = new ColoredText(tag.Data?.GetType().ToString() ?? "null");
         Data = new ColoredText(tag.Data?.ToString() ?? "null");
+
+        _coloredTextHelper = new(this);
     }
 
-    public override IEnumerator<IColoredText> GetEnumerator()
+    public IEnumerable<IColoredText> GetColoredTexts()
     {
         yield return Group;
         yield return Id;
@@ -35,4 +40,13 @@ internal sealed record MetaTagItemViewModel : CompositeColoredTextBase
         yield return Type;
         yield return Data;
     }
+
+    public bool ColorLetters(IReadOnlyCollection<string> coloringLowerWords)
+        => _coloredTextHelper.ColorLetters(coloringLowerWords);
+
+    public void ClearColorTexts() => _coloredTextHelper.ClearColorTexts();
+
+#pragma warning disable CS0067 // The event 'MetaTagItemViewModel.PropertyChanged' is never used
+    public event PropertyChangedEventHandler? PropertyChanged;
+#pragma warning restore CS0067 // The event 'MetaTagItemViewModel.PropertyChanged' is never used
 }

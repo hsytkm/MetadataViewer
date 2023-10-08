@@ -4,8 +4,13 @@
 /// 複数の ColoredText をまとめます。
 /// 派生クラスは View における DataGrid の Row になります。
 /// </summary>
-internal interface ICompositeColoredText : IEnumerable<IColoredText>
+internal interface ICompositeColoredText
 {
+    /// <summary>
+    /// IColoredTextを取得します
+    /// </summary>
+    IEnumerable<IColoredText> GetColoredTexts();
+
     /// <summary>
     /// 引数の文字列にヒットする文字列に色を付けます
     /// </summary>

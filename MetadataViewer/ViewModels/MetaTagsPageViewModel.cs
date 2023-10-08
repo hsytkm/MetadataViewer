@@ -1,5 +1,5 @@
 ﻿using MetadataViewer.Core;
-using System.Collections.Immutable;
+using System.ComponentModel;
 
 namespace MetadataViewer.ViewModels;
 
@@ -7,7 +7,7 @@ namespace MetadataViewer.ViewModels;
 /// メタページ（Exif / MakerNote など）のコレクションです。
 /// DataGrid の ItemsSource になります。
 /// </summary>
-internal sealed record MetaTagsPageViewModel : ICompositeColoredTextCollection
+internal sealed class MetaTagsPageViewModel : INotifyPropertyChanged, ICompositeColoredTextCollection
 {
     public string Name { get; }
     public IReadOnlyList<MetaTagItemViewModel> ItemsSource { get; }
@@ -22,4 +22,8 @@ internal sealed record MetaTagsPageViewModel : ICompositeColoredTextCollection
     public MetaTagsPageViewModel(MetadataStorage.MetaPage page)
         : this(page.Name, page.Tags.Select(x => new MetaTagItemViewModel(x)))
     { }
+
+#pragma warning disable CS0067 // The event 'MetaTagsPageViewModel.PropertyChanged' is never used
+    public event PropertyChangedEventHandler? PropertyChanged;
+#pragma warning restore CS0067 // The event 'MetaTagsPageViewModel.PropertyChanged' is never used
 }

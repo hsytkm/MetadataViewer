@@ -40,7 +40,7 @@ internal sealed class ColoredTextGeneratingColumnBehavior : Behavior<DataGrid>
 
     private static void Columns_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
+        if (e.Action is NotifyCollectionChangedAction.Remove && e.OldItems is not null)
         {
             foreach (DataGridColumn column in e.OldItems)
                 column.CopyingCellClipboardContent -= CopyToClipboard;
@@ -100,13 +100,13 @@ internal sealed class ColoredTextGeneratingColumnBehavior : Behavior<DataGrid>
         if (sender is not DataGridTemplateColumn column)
             return;
 
-        if (e.Item is not ICompositeColoredText container)
+        if (e.Item is not ICompositeColoredText coloredTexts)
             return;
 
         if (column.Header is not string propName)
             throw new NotSupportedException("Cannot get property name.");
 
-        if (container.GetType().GetProperty(propName)?.GetValue(container) is IColoredText ct)
+        if (coloredTexts.GetType().GetProperty(propName)?.GetValue(coloredTexts) is IColoredText ct)
             e.Content = ct.SourceText;
     }
 }

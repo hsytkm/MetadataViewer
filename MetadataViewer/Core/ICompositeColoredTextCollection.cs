@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace MetadataViewer.Core;
+﻿namespace MetadataViewer.Core;
 
 /// <summary>
 /// ICompositeColoredText のコレクションを保持します。

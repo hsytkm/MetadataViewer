@@ -1,7 +1,5 @@
 ﻿using MetadataViewer.Core;
-using MetadataViewer.ViewModels;
 using Microsoft.Xaml.Behaviors;
-using System.Collections.Immutable;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;

@@ -2,33 +2,39 @@
 
 namespace MetadataViewer.Core;
 
-/// <inheritdoc cref="ICompositeColoredText"/>
-internal abstract record CompositeColoredTextBase : ICompositeColoredText
+internal sealed class CompositeColoredTextHelper
 {
+    private readonly IReadOnlyList<IColoredText> _coloredTexts;
+
+    // 検索の高速化用に 各ColoredText を連結した文字列を保持しておきます。
+    private readonly string _concatLowerText;
+
+    public CompositeColoredTextHelper(ICompositeColoredText compositeColoredText)
+    {
+        var coloredTexts = compositeColoredText.GetColoredTexts().ToArray();
+
+        _coloredTexts = coloredTexts;
+        _concatLowerText = GetConcatLowerText(coloredTexts);
+    }
+
     /// <summary>
     /// 検索の高速化用に 各ColoredText を連結した文字列を保持しておきます。
     /// IgnoreCase の仕様なので Lower です。
     /// </summary>
-    private string ConcatLowerText
+    private static string GetConcatLowerText(IEnumerable<IColoredText> coloredTexts)
     {
-        get
-        {
-            if (_concatLowerText is null)
-            {
-                var sb = new StringBuilder();
-                foreach (var coloredText in this)
-                {
-                    sb.Append(coloredText.SourceText.ToLowerInvariant());
+        var sb = new StringBuilder();
 
-                    // ワードが密着すると意図通りに色付けされません
-                    sb.Append(CompositeColoredText.Separator);
-                }
-                _concatLowerText = sb.ToString();
-            }
-            return _concatLowerText;
+        foreach (var text in coloredTexts)
+        {
+            sb.Append(text.SourceText.ToLowerInvariant());
+
+            // ワードが密着すると意図通りに色付けされません
+            sb.Append(CompositeColoredText.Separator);
         }
+
+        return sb.ToString();
     }
-    private string? _concatLowerText;
 
     /// <summary>
     /// 引数の文字列にヒットする文字列に色を付けます
@@ -37,8 +43,10 @@ internal abstract record CompositeColoredTextBase : ICompositeColoredText
     /// <returns>引数の文字列を全て含むかどうかフラグ</returns>
     public bool ColorLetters(IReadOnlyCollection<string> coloringLowerWords)
     {
+        var coloredTexts = _coloredTexts;
+
         // words は Lower で通知される取り決め（高速化のため）
-        var isHitAll = IsHitAllWords(ConcatLowerText, coloringLowerWords);
+        var isHitAll = IsHitAllWords(_concatLowerText, coloringLowerWords);
 
         if (!isHitAll)
         {
@@ -47,7 +55,7 @@ internal abstract record CompositeColoredTextBase : ICompositeColoredText
         else
         {
             // 文字列のヒット位置を更新
-            foreach (var prop in this)
+            foreach (var prop in coloredTexts)
                 prop.FilterWords(coloringLowerWords);
         }
         return isHitAll;
@@ -69,10 +77,7 @@ internal abstract record CompositeColoredTextBase : ICompositeColoredText
     /// </summary>
     public void ClearColorTexts()
     {
-        foreach (var prop in this)
+        foreach (var prop in _coloredTexts)
             prop.ClearColor();
     }
-
-    public abstract IEnumerator<IColoredText> GetEnumerator();
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
 }
