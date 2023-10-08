@@ -3,45 +3,41 @@ using MetadataViewer.Models;
 using Prism.Mvvm;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
-namespace MetadataViewer.ViewModels
+namespace MetadataViewer.ViewModels;
+
+internal sealed class MainWindowViewModel : BindableBase
 {
-    class MainWindowViewModel : BindableBase
+    public string MetadataExtractorVersion { get; } = MetaModel.GetMetadataExtractorVersion();
+    public IReactiveProperty<string> FilePath { get; }
+    public IReactiveProperty<string> DroppedPath { get; }
+    public IReadOnlyReactiveProperty<CollectionSelectedItemPair<MetaTagsPageViewModel>> MetaPages { get; }
+
+    public MainWindowViewModel(MetaModel metaModel)
     {
-        public string MetadataExtractorVersion { get; } = MetaModel.GetMetadataExtractorVersion();
-        public IReactiveProperty<string> FilePath { get; }
-        public IReactiveProperty<string> DroppedPath { get; }
-        public IReadOnlyReactiveProperty<CollectionSelectedItemPair<MetaTagsPageViewModel>> MetaPages { get; }
+        var disposables = new CompositeDisposable();    // undisposed
 
-        public MainWindowViewModel(MetaModel metaModel)
-        {
-            var disposables = new CompositeDisposable();    // undisposed
+        FilePath = metaModel.FilePath;
+        DroppedPath = new ReactivePropertySlim<string>(mode: ReactivePropertyMode.DistinctUntilChanged).AddTo(disposables);
+        DroppedPath.Subscribe(x => FilePath.Value = x).AddTo(disposables);
 
-            FilePath = metaModel.FilePath;
-            DroppedPath = new ReactivePropertySlim<string>(mode: ReactivePropertyMode.DistinctUntilChanged).AddTo(disposables);
-            DroppedPath.Subscribe(x => FilePath.Value = x).AddTo(disposables);
-
-            MetaPages = metaModel.SelectedBook
-                .Where(x => x is not null)
-                .Select(x => CollectionSelectedItemPair.Create(CreateMetaPages(x!)))
-                .ToReadOnlyReactivePropertySlim()
-                .AddTo(disposables);
+        MetaPages = metaModel.SelectedBook
+            .Where(x => x is not null)
+            .Select(x => CollectionSelectedItemPair.Create(CreateMetaPages(x!)))
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(disposables);
 
 #if DEBUG
-            FilePath.Value = @"C:\data\official\Panasonic_DMC-GF7.jpg";
+        FilePath.Value = @"D:\data\Image0.JPG";
 #endif
-        }
+    }
 
-        private static IEnumerable<MetaTagsPageViewModel> CreateMetaPages(MetadataStorage.MetaBook book)
-        {
-            var pages = book.Pages.Select(p => new MetaTagsPageViewModel(p)).ToArray();
-            var all = new MetaTagsPageViewModel("All", pages.SelectMany(x => x.Collection));
-            return pages.Prepend(all);
-        }
+    private static IEnumerable<MetaTagsPageViewModel> CreateMetaPages(MetadataStorage.MetaBook book)
+    {
+        var pages = book.Pages.Select(p => new MetaTagsPageViewModel(p)).ToArray();
+        var all = new MetaTagsPageViewModel("All", pages.SelectMany(x => x.Collection));
+        return pages.Prepend(all);
     }
 }

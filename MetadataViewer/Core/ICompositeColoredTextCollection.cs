@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 
-namespace MetadataViewer.Core
+namespace MetadataViewer.Core;
+
+/// <summary>
+/// ICompositeColoredText のコレクションを保持します。
+/// 派生クラスは View における DataGrid の ItemsSource になります。
+/// </summary>
+/// <typeparam name="T"></typeparam>
+internal interface ICompositeColoredTextCollection<T> where T : ICompositeColoredText
 {
     /// <summary>
-    /// ICompositeColoredText のコレクションを保持します。
-    /// 派生クラスは View における DataGrid の ItemsSource になります。
+    /// ICompositeColoredText のコレクションです。
+    /// DataGrid の ItemsSource になります。
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    interface ICompositeColoredTextCollection<T> where T : ICompositeColoredText
-    {
-        /// <summary>
-        /// ICompositeColoredText のコレクションです。
-        /// DataGrid の ItemsSource になります。
-        /// </summary>
-        IImmutableList<T> Collection { get; }
-    }
+    IImmutableList<T> Collection { get; }
 }

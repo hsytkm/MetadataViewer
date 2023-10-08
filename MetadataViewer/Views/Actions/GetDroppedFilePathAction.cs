@@ -1,62 +1,58 @@
 ﻿using Microsoft.Xaml.Behaviors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 
-namespace MetadataViewer.Views.Actions
+namespace MetadataViewer.Views.Actions;
+
+internal sealed class GetDroppedFilePathAction : TriggerAction<DependencyObject>
 {
-    sealed class GetDroppedFilePathAction : TriggerAction<DependencyObject>
+    public static readonly DependencyProperty DroppedPathProperty =
+        DependencyProperty.Register(nameof(DroppedPath), typeof(string), typeof(GetDroppedFilePathAction));
+
+    public string DroppedPath
     {
-        public static readonly DependencyProperty DroppedPathProperty =
-            DependencyProperty.Register(nameof(DroppedPath), typeof(string), typeof(GetDroppedFilePathAction));
+        get => (string)GetValue(DroppedPathProperty);
+        set => SetValue(DroppedPathProperty, value);
+    }
 
-        public string DroppedPath
+    protected override void OnAttached()
+    {
+        base.OnAttached();
+
+        if (AssociatedObject is UIElement element)
+            element.AllowDrop = true;
+    }
+
+    protected override void OnDetaching()
+    {
+        if (AssociatedObject is UIElement element)
+            element.AllowDrop = false;
+
+        base.OnDetaching();
+    }
+
+    protected override void Invoke(object parameter)
+    {
+        if (parameter is not DragEventArgs e) return;
+
+        var path = GetFilePaths(e.Data).FirstOrDefault();
+        if (path is not null) DroppedPath = path;
+    }
+
+    private static IEnumerable<string> GetFilePaths(IDataObject data)
+    {
+        if (data.GetDataPresent(DataFormats.FileDrop))
         {
-            get => (string)GetValue(DroppedPathProperty);
-            set => SetValue(DroppedPathProperty, value);
-        }
-
-        protected override void OnAttached()
-        {
-            base.OnAttached();
-
-            if (AssociatedObject is UIElement element)
-                element.AllowDrop = true;
-        }
-
-        protected override void OnDetaching()
-        {
-            if (AssociatedObject is UIElement element)
-                element.AllowDrop = false;
-
-            base.OnDetaching();
-        }
-
-        protected override void Invoke(object parameter)
-        {
-            if (parameter is not DragEventArgs e) return;
-
-            var path = GetFilePaths(e.Data).FirstOrDefault();
-            if (path is not null) DroppedPath = path;
-        }
-
-        private static IEnumerable<string> GetFilePaths(IDataObject data)
-        {
-            if (data.GetDataPresent(DataFormats.FileDrop))
+            if (data.GetData(DataFormats.FileDrop) is string[] ss)
             {
-                if (data.GetData(DataFormats.FileDrop) is string[] ss)
-                {
-                    foreach (var s in ss)
-                        yield return s;
-                }
-                else { throw new FormatException(); }
+                foreach (var s in ss)
+                    yield return s;
             }
-            else
-            {
-                var path = data.GetData(DataFormats.Text)?.ToString();
-                yield return path ?? "";
-            }
+            else { throw new FormatException(); }
+        }
+        else
+        {
+            var path = data.GetData(DataFormats.Text)?.ToString();
+            yield return path ?? "";
         }
     }
 }
