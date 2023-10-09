@@ -3,42 +3,32 @@ using Prism.DryIoc;
 using Prism.Ioc;
 using Reactive.Bindings;
 using Reactive.Bindings.Schedulers;
-using System;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace MetadataViewer
+namespace MetadataViewer;
+
+public partial class App : PrismApplication
 {
-    public partial class App : PrismApplication
+    protected override void OnStartup(StartupEventArgs e)
     {
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            ReactivePropertyScheduler.SetDefault(new ReactivePropertyWpfScheduler(Dispatcher));
-            base.OnStartup(e);
-        }
+        ReactivePropertyScheduler.SetDefault(new ReactivePropertyWpfScheduler(Dispatcher));
+        base.OnStartup(e);
+    }
 
-        protected override Window CreateShell() => Container.Resolve<MainWindow>();
+    protected override Window CreateShell() => Container.Resolve<MainWindow>();
 
-        protected override void RegisterTypes(IContainerRegistry containerRegistry)
-        {
-            containerRegistry.RegisterSingleton<Models.MetaModel>();
-        }
+    protected override void RegisterTypes(IContainerRegistry containerRegistry)
+    {
+        containerRegistry.RegisterSingleton<Models.MetaModel>();
+    }
 
-        //protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
-        //{
-        //}
+    private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+    {
+        var message = "Occurred unhandled exception" + Environment.NewLine
+            + $"{e.Exception.GetType()} : {e.Exception.Message}";
 
-        //protected override void ConfigureDefaultRegionBehaviors(IRegionBehaviorFactory regionBehaviors)
-        //{
-        //}
-
-        private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        {
-            var message = "Occurred unhandled exception" + Environment.NewLine
-                + $"{e.Exception.GetType()} : {e.Exception.Message}";
-
-            MessageBox.Show(message, "Exception occurred", MessageBoxButton.OK, MessageBoxImage.Error);
-            e.Handled = true;
-        }
+        MessageBox.Show(message, "Exception occurred", MessageBoxButton.OK, MessageBoxImage.Error);
+        e.Handled = true;
     }
 }

@@ -1,45 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
-namespace MetadataViewer.Common
+namespace MetadataViewer.Common;
+
+/// <summary>
+/// IImmutableList&lt;T&gt; と SelectedItem をペアで管理する。
+/// コレクションが変化しない場合に使用する（変化する場合は ObservableCollectionSelectedItemPair）
+/// </summary>
+internal sealed class CollectionSelectedItemPair<T> : INotifyPropertyChanged
 {
-    /// <summary>
-    /// IImmutableList&lt;T&gt; と SelectedItem をペアで管理する。
-    /// コレクションが変化しない場合に使用する（変化する場合は ObservableCollectionSelectedItemPair）
-    /// </summary>
-    sealed class CollectionSelectedItemPair<T> : INotifyPropertyChanged
+    public IReadOnlyList<T> Collection { get; }
+
+    public T? SelectedItem
     {
-        public IImmutableList<T> Collection { get; }
-
-        public T? SelectedItem
+        get => _selectedItem;
+        set
         {
-            get => _selectedItem;
-            set
-            {
-                if (_selectedItem is null && value is null) return;
-                if (_selectedItem?.Equals(value) ?? false) return;
+            if (_selectedItem is null && value is null)
+                return;
 
-                _selectedItem = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedItem)));
-            }
-        }
-        private T? _selectedItem;
+            if (_selectedItem?.Equals(value) ?? false)
+                return;
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        public CollectionSelectedItemPair(IEnumerable<T> items)
-        {
-            Collection = ImmutableArray.CreateRange(items);
-
-            if (Collection.Count == 0) throw new ArgumentException("items is empty.");
-            SelectedItem = Collection[0];
+            _selectedItem = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedItem)));
         }
     }
+    private T? _selectedItem;
 
-    static class CollectionSelectedItemPair
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public CollectionSelectedItemPair(IReadOnlyList<T> items)
     {
-        public static CollectionSelectedItemPair<T> Create<T>(IEnumerable<T> items) => new(items);
+        if (items.Count is 0)
+            throw new ArgumentException("items is empty.");
+
+        (Collection, SelectedItem) = (items, items[0]);
     }
+}
+
+internal static class CollectionSelectedItemPair
+{
+    public static CollectionSelectedItemPair<T> Create<T>(IReadOnlyList<T> items) => new(items);
+    public static CollectionSelectedItemPair<T> Create<T>(IEnumerable<T> items) => Create(items.ToArray());
 }

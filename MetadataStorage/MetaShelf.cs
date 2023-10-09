@@ -1,34 +1,28 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Concurrent;
 using System.Reflection;
 
-namespace MetadataStorage
+namespace MetadataStorage;
+
+public sealed class MetaShelf
 {
-    public class MetaShelf
+    private readonly ConcurrentDictionary<string, MetaBook> _booksDict = new();
+
+    public MetaShelf() { }
+
+    public MetaBook GetOrAdd(string filePath)
     {
-        private readonly IDictionary<string, MetaBook> _booksDict = new ConcurrentDictionary<string, MetaBook>();
-
-        public MetaShelf() { }
-
-        public MetaBook GetOrAdd(string filePath)
+        if (!_booksDict.TryGetValue(filePath, out var book))
         {
-            if (!_booksDict.TryGetValue(filePath, out var value))
-            {
-                var sw = new System.Diagnostics.Stopwatch();
-                sw.Start();
+            var sw = Stopwatch.StartNew();
+            book = new MetaBook(filePath);
+            sw.Stop();
 
-                value = new MetaBook(filePath);
-                _booksDict.Add(filePath, value);
-
-                sw.Stop();
-                System.Diagnostics.Debug.WriteLine($"ReadMeta: {sw.ElapsedMilliseconds} msec");
-            }
-            return value;
+            _ = _booksDict.TryAdd(filePath, book);
+            Debug.WriteLine($"ReadMeta: {sw.ElapsedMilliseconds} msec");
         }
-
-        public static string GetMetadataExtractorVersion()
-            => Assembly.GetAssembly(typeof(MetadataExtractor.Tag))?.GetName().Version?.ToString() ?? "";
+        return book;
     }
+
+    public static string GetMetadataExtractorVersion()
+        => Assembly.GetAssembly(typeof(MetadataExtractor.Tag))?.GetName().Version?.ToString() ?? "";
 }
