@@ -31,6 +31,7 @@ internal sealed class MetaTagItemViewModel : INotifyPropertyChanged, ICompositeC
         _coloredTextHelper = new(this);
     }
 
+    /// <inheritdoc/>
     public IEnumerable<IColoredText> GetColoredTexts()
     {
         yield return Group;
@@ -41,9 +42,15 @@ internal sealed class MetaTagItemViewModel : INotifyPropertyChanged, ICompositeC
         yield return Data;
     }
 
-    public bool ColorLetters(IReadOnlyCollection<string> coloringLowerWords)
-        => _coloredTextHelper.ColorLetters(coloringLowerWords);
+    /// <inheritdoc/>
+    public void UpdateColoredTexts(IReadOnlyCollection<string> filterWords)
+        => _coloredTextHelper.UpdateColoredTexts(filterWords);
 
+    /// <inheritdoc/>
+    public bool IsHitWords(IEnumerable<string> filterWords)
+        => _coloredTextHelper.IsHitWords(filterWords);
+
+    /// <inheritdoc/>
     public void ClearColorTexts() => _coloredTextHelper.ClearColorTexts();
 
 #pragma warning disable CS0067 // The event 'MetaTagItemViewModel.PropertyChanged' is never used

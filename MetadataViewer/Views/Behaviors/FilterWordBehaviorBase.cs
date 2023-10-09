@@ -43,7 +43,7 @@ internal abstract class FilterWordBehaviorBase<T> : Behavior<T>, IHasFilterWord
 
         // 以下の条件がないと子要素(メタ情報)の選択変化で以降の処理が実行される。
         // そうすると Ctrl+C, Ctrl+A などがほとんど効かなくなる。原因不明…
-        if (!e.AddedItems.OfType<ICompositeColoredTextCollection>().Any())
+        if (!e.AddedItems.OfType<ICompositeColoredTextsList>().Any())
             return;
 
         OnFilterWordPropertyChanged(dep);
@@ -53,30 +53,44 @@ internal abstract class FilterWordBehaviorBase<T> : Behavior<T>, IHasFilterWord
     private static void OnFilterWordPropertyChanged(DependencyObject dep)
     {
         // this.FilterWord を取得するために、Behavior の interface から引っ張る（ちょっと強引…）
-        var hasFilterBehavior = Interaction.GetBehaviors(dep)
-            .FirstOrDefault(x => x is IHasFilterWord) as IHasFilterWord;
-
-        if (hasFilterBehavior is null)
+        if (Interaction.GetBehaviors(dep).FirstOrDefault(x => x is IHasFilterWord) is not IHasFilterWord hasFilterWord)
             return;
 
-        OnFilterWordPropertyChanged(dep, hasFilterBehavior.FilterWord);
+        OnFilterWordPropertyChanged(dep, hasFilterWord.FilterWord);
     }
 
     /// <summary>フィルタ文字列でコレクションを絞り込みます</summary>
-    internal static void OnFilterWordPropertyChanged(DependencyObject? dep, string filterWord)
+    internal static async void OnFilterWordPropertyChanged(DependencyObject? dep, string filterSource)
     {
-        var itemsSource = dep switch
+        var textsSource = dep switch
         {
-            TabControl tc => (tc.SelectedItem as ICompositeColoredTextCollection)?.ColoredTexts,
+            TabControl tc => (tc.SelectedItem as ICompositeColoredTextsList)?.ColoredTexts,
             DataGrid dg => dg.ItemsSource as IReadOnlyList<ICompositeColoredText>,
             _ => null
         };
 
-        if (itemsSource is null)
+        if (textsSource is null)
             return;
 
-        var collectionView = CollectionViewSource.GetDefaultView(itemsSource);
-        collectionView.Filter = CompositeColoredText.IsHitPredicate(filterWord);
+        var filterWords = ColoredTextHelper.SplitFilterWords(filterSource);
+
+        // 時間が掛かることがあるので非同期で元データを用意することで、ICollectionView.Filter(Predicate<object>)を高速化します
+        await Task.Run(() =>
+        {
+            if (filterWords.Count > 0)
+            {
+                foreach (var text in textsSource)
+                    text.UpdateColoredTexts(filterWords);
+            }
+            else
+            {
+                foreach (var text in textsSource)
+                    text.ClearColorTexts();
+            }
+        });
+
+        var collectionView = CollectionViewSource.GetDefaultView(textsSource);
+        collectionView.Filter = ColoredTextHelper.GetIsHitPredicate(filterWords);
     }
 }
 

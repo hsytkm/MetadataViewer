@@ -14,10 +14,14 @@ internal interface ICompositeColoredText
     /// <summary>
     /// 引数の文字列にヒットする文字列に色を付けます
     /// </summary>
-    /// <param name="words"></param>
-    /// <param name="coloringWords">色を付ける文字列</param>
-    /// <returns>引数の文字列を全て含むかどうかフラグ</returns>
-    bool ColorLetters(IReadOnlyCollection<string> coloringLowerWords);
+    /// <param name="filterWords">色付けする単語</param>
+    void UpdateColoredTexts(IReadOnlyCollection<string> filterWords);
+
+    /// <summary>
+    /// 引数の単語にヒットするかを判定します
+    /// </summary>
+    /// <param name="filterWords">色付けする単語</param>
+    bool IsHitWords(IEnumerable<string> filterWords);
 
     /// <summary>
     /// 文字列の色付けを解除します

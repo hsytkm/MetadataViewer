@@ -10,9 +10,11 @@
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+    xmlns:viewmodels="clr-namespace:MetadataViewer.ViewModels"
     Title="MetadataExtractorViewer"
     Width="800"
     Height="450"
+    d:DataContext="{d:DesignInstance Type=viewmodels:MainWindowViewModel}"
     ResizeMode="CanResizeWithGrip"
     TitleCharacterCasing="Normal"
     mc:Ignorable="d">
@@ -85,14 +87,19 @@
             <TabControl.ContentTemplate>
                 <DataTemplate>
                     <DataGrid
+                        AutoGenerateColumns="True"
                         CanUserAddRows="False"
                         CanUserDeleteRows="False"
                         CanUserReorderColumns="False"
+                        CanUserResizeColumns="True"
                         CanUserResizeRows="False"
                         CanUserSortColumns="False"
                         ClipboardCopyMode="IncludeHeader"
+                        GridLinesVisibility="None"
                         IsReadOnly="True"
-                        ItemsSource="{Binding ItemsSource, Mode=OneTime}">
+                        ItemsSource="{Binding ItemsSource, Mode=OneTime}"
+                        SelectionMode="Extended"
+                        SelectionUnit="FullRow">
                         <i:Interaction.Behaviors>
                             <behavior:ColoredTextGeneratingColumnBehavior />
                         </i:Interaction.Behaviors>
@@ -100,6 +107,5 @@
                 </DataTemplate>
             </TabControl.ContentTemplate>
         </TabControl>
-
     </DockPanel>
 </mah:MetroWindow>

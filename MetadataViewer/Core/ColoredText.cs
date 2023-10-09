@@ -7,10 +7,10 @@ namespace MetadataViewer.Core;
 /// </summary>
 internal sealed class ColoredText : IColoredText
 {
-    /// <summary>表示テキスト</summary>
+    /// <inheritdoc/>
     public string SourceText { get; }
 
-    /// <summary>色付け文字の位置管理</summary>
+    /// <inheritdoc/>
     public IReadOnlyList<Range> ColoredRanges { get; private set; }
 
     public ColoredText(string text) => (SourceText, ColoredRanges) = (text, []);
@@ -80,9 +80,13 @@ internal sealed class ColoredText : IColoredText
         }
     }
 
-    /// <summary>文字列と検索語から色付け文字の位置を更新します</summary>
-    public void FilterWords(IReadOnlyCollection<string> words) => ColoredRanges = FilterByWords(SourceText, words);
+    /// <inheritdoc/>
+    public void FilterWords(IReadOnlyCollection<string> words)
+    {
+        //Thread.Sleep(3);  // ◆動作確認用ウェイト(処理中にアプリがフリーズしないこと)
+        ColoredRanges = FilterByWords(SourceText, words);
+    }
 
-    /// <summary>色付けをクリアします</summary>
+    /// <inheritdoc/>
     public void ClearColor() => ColoredRanges = [];
 }

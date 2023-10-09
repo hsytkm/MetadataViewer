@@ -54,7 +54,7 @@ internal sealed class ColoredTextGeneratingColumnBehavior : Behavior<DataGrid>
             e.Column = new DataGridTemplateColumn
             {
                 Header = e.PropertyName,
-                CellTemplate = GetColoredTextDataTemplate(_propertyNameToDataTemplateDict, e.PropertyName),
+                CellTemplate = getColoredTextDataTemplate(_propertyNameToDataTemplateDict, e.PropertyName),
                 IsReadOnly = true,
             };
 
@@ -62,9 +62,9 @@ internal sealed class ColoredTextGeneratingColumnBehavior : Behavior<DataGrid>
             e.Column.CopyingCellClipboardContent += CopyToClipboard;
         }
 
-        static DataTemplate GetColoredTextDataTemplate(IDictionary<string, DataTemplate> dict, string propertyName)
+        static DataTemplate getColoredTextDataTemplate(IDictionary<string, DataTemplate> dict, string propertyName)
         {
-            static ParserContext GetParserContext(Type type)
+            static ParserContext getParserContext(Type type)
             {
                 var pc = new ParserContext();
                 pc.XmlnsDictionary.Add("", "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
@@ -74,7 +74,7 @@ internal sealed class ColoredTextGeneratingColumnBehavior : Behavior<DataGrid>
                 return pc;
             }
 
-            static DataTemplate GetDataTemplate(string name)
+            static DataTemplate getDataTemplate(string name)
             {
                 var type = typeof(ColoredTextBlockContentHelper);
 
@@ -82,12 +82,12 @@ internal sealed class ColoredTextGeneratingColumnBehavior : Behavior<DataGrid>
                 var xaml = "<DataTemplate><TextBlock z:" + type.Name + "." + ColoredTextBlockContentHelper.ColoredTextItem + "=\"{Binding " + name + "}\"/></DataTemplate>";
                 var bs = Encoding.ASCII.GetBytes(xaml);
                 using var sr = new MemoryStream(bs);
-                return (DataTemplate)XamlReader.Load(sr, GetParserContext(type));
+                return (DataTemplate)XamlReader.Load(sr, getParserContext(type));
             }
 
             if (!dict.TryGetValue(propertyName, out var dataTemplate))
             {
-                dataTemplate = GetDataTemplate(propertyName);
+                dataTemplate = getDataTemplate(propertyName);
                 dict.Add(propertyName, dataTemplate);
             }
             return dataTemplate;
@@ -139,14 +139,14 @@ public sealed class ColoredTextBlockContentHelper : DependencyObject
             textBlock.Text = "";
 
             if (textBlock.Inlines.Count == 0)   // duplicate display when scrolling
-                textBlock.Inlines.AddRange(CreateRuns(ct));
+                textBlock.Inlines.AddRange(createRuns(ct));
         }
         else
         {
             textBlock.Text = ct.SourceText;
         }
 
-        static IEnumerable<Run> CreateRuns(IColoredText ct)
+        static IEnumerable<Run> createRuns(IColoredText ct)
         {
             var sourceText = ct.SourceText;
             var index = 0;

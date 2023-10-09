@@ -4,8 +4,7 @@
 /// ICompositeColoredText のコレクションを保持します。
 /// 派生クラスは View における DataGrid の ItemsSource になります。
 /// </summary>
-/// <typeparam name="T"></typeparam>
-internal interface ICompositeColoredTextCollection
+internal interface ICompositeColoredTextsList
 {
     /// <summary>
     /// ICompositeColoredText のコレクションです。

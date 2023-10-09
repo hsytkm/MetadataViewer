@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace MetadataViewer.Common;
 
@@ -9,15 +8,18 @@ namespace MetadataViewer.Common;
 /// </summary>
 internal sealed class CollectionSelectedItemPair<T> : INotifyPropertyChanged
 {
-    public IImmutableList<T> Collection { get; }
+    public IReadOnlyList<T> Collection { get; }
 
     public T? SelectedItem
     {
         get => _selectedItem;
         set
         {
-            if (_selectedItem is null && value is null) return;
-            if (_selectedItem?.Equals(value) ?? false) return;
+            if (_selectedItem is null && value is null)
+                return;
+
+            if (_selectedItem?.Equals(value) ?? false)
+                return;
 
             _selectedItem = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedItem)));
@@ -27,16 +29,17 @@ internal sealed class CollectionSelectedItemPair<T> : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public CollectionSelectedItemPair(IEnumerable<T> items)
+    public CollectionSelectedItemPair(IReadOnlyList<T> items)
     {
-        Collection = ImmutableArray.CreateRange(items);
+        if (items.Count is 0)
+            throw new ArgumentException("items is empty.");
 
-        if (Collection.Count == 0) throw new ArgumentException("items is empty.");
-        SelectedItem = Collection[0];
+        (Collection, SelectedItem) = (items, items[0]);
     }
 }
 
-static class CollectionSelectedItemPair
+internal static class CollectionSelectedItemPair
 {
-    public static CollectionSelectedItemPair<T> Create<T>(IEnumerable<T> items) => new(items);
+    public static CollectionSelectedItemPair<T> Create<T>(IReadOnlyList<T> items) => new(items);
+    public static CollectionSelectedItemPair<T> Create<T>(IEnumerable<T> items) => Create(items.ToArray());
 }
