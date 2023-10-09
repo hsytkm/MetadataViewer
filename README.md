@@ -6,7 +6,7 @@ There are no extra features.  Just display the result without modification.
 
 
 
-![demo.gif](https://github.com/hsytkm/MetadataViewer/blob/master/demo.gif)
+![demo.gif](https://github.com/hsytkm/MetadataViewer/blob/main/demo.gif)
 
 
 
